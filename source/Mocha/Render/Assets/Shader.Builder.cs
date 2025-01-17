@@ -8,7 +8,6 @@ public class ShaderBuilder
 	private ShaderDescription VertexShaderDescription;
 	private ShaderDescription FragmentShaderDescription;
 
-	private Framebuffer targetFramebuffer = SceneWorld.Current.Camera.Framebuffer;
 	private FaceCullMode faceCullMode = FaceCullMode.Back;
 
 	private bool UseCustomPipeline;
@@ -36,12 +35,6 @@ public class ShaderBuilder
 		VertexShaderDescription = new ShaderDescription( ShaderStages.Vertex, vertexShaderBytes, "main" );
 		FragmentShaderDescription = new ShaderDescription( ShaderStages.Fragment, fragmentShaderBytes, "main" );
 
-		return this;
-	}
-
-	public ShaderBuilder WithFramebuffer( Framebuffer framebuffer )
-	{
-		this.targetFramebuffer = framebuffer;
 		return this;
 	}
 
@@ -85,11 +78,11 @@ public class ShaderBuilder
 			VertexShaderDescription.ShaderBytes = vertCompilation.SpirvBytes;
 
 			var shaderProgram = Device.ResourceFactory.CreateFromSpirv( VertexShaderDescription, FragmentShaderDescription );
-			var shader = new Shader( Path, targetFramebuffer, faceCullMode, shaderProgram );
+			var shader = new Shader( Path, Device.SwapchainFramebuffer, faceCullMode, shaderProgram );
 
 			var pipelineFactory = ( PipelineFactory ?? new() )
 				.WithShader( shader )
-				.WithFramebuffer( targetFramebuffer )
+				.WithFramebuffer( Device.SwapchainFramebuffer )
 				.WithFaceCullMode( faceCullMode );
 
 			if ( !UseCustomPipeline )

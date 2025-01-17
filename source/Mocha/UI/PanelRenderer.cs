@@ -16,7 +16,6 @@ public partial class PanelRenderer
 			.AddObjectResource( "g_oUbo", ResourceKind.UniformBuffer, ShaderStages.Fragment | ShaderStages.Vertex );
 
 		var shader = ShaderBuilder.Default.FromPath( "core/shaders/ui/ui.mshdr" )
-			.WithFramebuffer( Device.SwapchainFramebuffer )
 			.WithCustomPipeline( pipeline )
 			.Build();
 

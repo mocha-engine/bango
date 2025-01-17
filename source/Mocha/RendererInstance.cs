@@ -1,4 +1,5 @@
 ﻿using Mocha.Common.World;
+using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 
 namespace Mocha.Renderer;
@@ -7,13 +8,11 @@ public class RendererInstance
 {
 	public Window window;
 
-	private SceneWorld world;
 	private DateTime lastFrame;
 
 	private CommandList commandList;
 
 	private Material gbufferCombineMaterial;
-	private Model fullscreenQuad;
 
 	public Action PreUpdate;
 	public Action OnUpdate;
@@ -38,45 +37,17 @@ public class RendererInstance
 		Device.SwapBuffers();
 
 		commandList = Device.ResourceFactory.CreateCommandList();
-
-		world = new();
 	}
 
 	public void Run()
 	{
-		gbufferCombineMaterial = new Material()
-		{
-			Shader = ShaderBuilder.Default.FromPath( "core/shaders/combine.mshdr" )
-											.WithFramebuffer( Device.SwapchainFramebuffer )
-											.WithFaceCullMode( FaceCullMode.None )
-											.Build(),
-			UniformBufferType = typeof( EmptyUniformBuffer ),
-			DiffuseTexture = world.Camera.ColorTexture
-		};
-
-		fullscreenQuad = Primitives.Plane.GenerateModel( gbufferCombineMaterial );
+		OnWindowResized( window.Size );
 
 		while ( window.SdlWindow.Exists )
 		{
 			Update();
 
-			// Build the camera right before we render, makes sure we're
-			// in the right spot with as little latency as possible
-			{
-				var worldCameraSetup = BuildCamera();
-				worldCameraSetup.BuildMatrices( out var viewMatrix, out var projMatrix );
-				RenderPass( Renderer.RenderPass.Main, viewMatrix * projMatrix, world.Camera.Framebuffer );
-			}
-
 			PreRender();
-
-			//
-			// Render world
-			//
-			{
-				world.Sun.CalcViewProjMatrix();
-				RenderPass( Renderer.RenderPass.ShadowMap, world.Sun.ViewMatrix * world.Sun.ProjMatrix, world.Sun.ShadowBuffer );
-			}
 
 			PostRender();
 
@@ -84,7 +55,7 @@ public class RendererInstance
 			// Set window title
 			//
 			var framerate = 1.000f / Time.AverageDelta;
-			var windowTitle = $"Mocha | {Device.BackendType} | {framerate.CeilToInt()}fps";
+			var windowTitle = $"Mocha.UI | {Device.BackendType} | {framerate.CeilToInt()}fps";
 			Window.Current.Title = windowTitle;
 		}
 	}
@@ -101,20 +72,6 @@ public class RendererInstance
 		commandList.Begin();
 	}
 
-	private CameraSetup BuildCamera()
-	{
-		var cameraSetup = new CameraSetup();
-
-		world.Camera.BuildCamera( ref cameraSetup );
-
-		foreach ( var entity in EntityPool.Entities )
-		{
-			entity.BuildCamera( ref cameraSetup );
-		}
-
-		return cameraSetup;
-	}
-
 	private void PostRender()
 	{
 		commandList.SetFramebuffer( Device.SwapchainFramebuffer );
@@ -124,10 +81,6 @@ public class RendererInstance
 		commandList.ClearColorTarget( 0, RgbaFloat.Black );
 		commandList.ClearDepthStencil( 1 );
 
-		commandList.PushDebugGroup( "GBuffer Combine" );
-		fullscreenQuad.Draw( Renderer.RenderPass.Combine, new EmptyUniformBuffer(), commandList );
-		commandList.PopDebugGroup();
-
 		commandList.PushDebugGroup( "UI Render" );
 		RenderOverlays?.Invoke( commandList );
 		commandList.PopDebugGroup();
@@ -136,23 +89,6 @@ public class RendererInstance
 
 		Device.SubmitCommands( commandList );
 		Device.SwapBuffers();
-	}
-
-	private void RenderPass( RenderPass renderPass, Matrix4x4 viewProjMatrix, Framebuffer framebuffer )
-	{
-		commandList.PushDebugGroup( renderPass.ToString() );
-		commandList.SetFramebuffer( framebuffer );
-		commandList.SetViewport( 0, new Viewport( 0, 0, framebuffer.Width, framebuffer.Height, 0, 1 ) );
-		commandList.SetFullViewports();
-		commandList.SetFullScissorRects();
-
-		for ( uint i = 0; i < framebuffer.ColorTargets.Count; ++i )
-			commandList.ClearColorTarget( i, RgbaFloat.Black );
-
-		commandList.ClearDepthStencil( 1 );
-
-		world.Render( viewProjMatrix, renderPass, commandList );
-		commandList.PopDebugGroup();
 	}
 
 	private void Update()
@@ -184,6 +120,8 @@ public class RendererInstance
 	[Event.Window.Resized]
 	public void OnWindowResized( Point2 newSize )
 	{
-		Device.MainSwapchain.Resize( (uint)newSize.X, (uint)newSize.Y );
+		var dpiScale = 1.0f;
+
+		Device.MainSwapchain.Resize( (uint)(newSize.X * dpiScale), (uint)(newSize.Y * dpiScale) );
 	}
 }

@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using Veldrid.Sdl2;
-using Veldrid.StartupUtilities;
 
 namespace Mocha.Renderer;
 
@@ -19,17 +18,8 @@ public class Window
 	{
 		Current ??= this;
 
-		var windowCreateInfo = new WindowCreateInfo()
-		{
-			WindowWidth = 1280,
-			WindowHeight = 720,
-			WindowTitle = "Mocha",
-			X = 128,
-			Y = 128,
-			WindowInitialState = WindowState.Maximized
-		};
-
-		SdlWindow = VeldridStartup.CreateWindow( windowCreateInfo );
+		var windowFlags = SDL_WindowFlags.OpenGL | SDL_WindowFlags.Resizable | SDL_WindowFlags.AllowHighDpi | SDL_WindowFlags.Shown;
+		SdlWindow = new Sdl2Window( "Mocha", 128, 128, 1280, 720, windowFlags, threadedProcessing: false );
 		SetDarkMode( true );
 
 		Screen.UpdateFrom( Size );
