@@ -17,6 +17,6 @@ public class Stopwatch : IDisposable
 		var end = DateTime.Now;
 		var durationMs = (end - start).TotalMilliseconds;
 
-		Log.Info( $"{name} took {durationMs:F0}ms" );
+		Log.Info( $"{name} took {durationMs:F2}ms" );
 	}
 }
