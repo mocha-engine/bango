@@ -34,7 +34,7 @@ public class FileSystem
 
 	public string ReadAllText( string relativePath )
 	{
-			return File.ReadAllText( GetAbsolutePath( relativePath ) );
+		return File.ReadAllText( GetAbsolutePath( relativePath ) );
 	}
 
 	public byte[] ReadAllBytes( string relativePath )
