@@ -1,7 +1,7 @@
 ﻿using System.IO.Compression;
 using System.Text.Json;
 
-namespace Mocha.Common.Serialization;
+namespace Bango.Common.Serialization;
 
 public static class Serializer
 {

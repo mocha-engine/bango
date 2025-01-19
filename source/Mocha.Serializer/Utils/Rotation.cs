@@ -1,6 +1,6 @@
 ﻿using SharpDX.Direct3D11;
 
-namespace Mocha.Common;
+namespace Bango.Common;
 
 public partial struct Rotation : IEquatable<Rotation>
 {

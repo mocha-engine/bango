@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Mocha.Common;
+namespace Bango.Common;
 
 public static partial class Event
 {

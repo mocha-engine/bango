@@ -2,7 +2,7 @@
 using System.Text;
 using Veldrid.Sdl2;
 
-namespace Mocha.Common;
+namespace Bango.Common;
 
 // TODO: Decouple from SDL
 public static partial class Input
@@ -15,7 +15,7 @@ public static partial class Input
 
 	public static MouseModes MouseMode { get; set; } = MouseModes.Unlocked;
 
-	public static MochaInputSnapshot Snapshot { get; private set; }
+	public static BangoInputSnapshot Snapshot { get; private set; }
 
 	public static System.Numerics.Vector2 MouseDelta => Snapshot.MouseDelta / Screen.DpiScale;
 	public static System.Numerics.Vector2 MousePosition => Snapshot.MousePosition / Screen.DpiScale;

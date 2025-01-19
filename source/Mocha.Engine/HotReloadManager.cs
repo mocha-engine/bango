@@ -1,8 +1,8 @@
-﻿using Mocha.Engine;
+﻿using Bango.Engine;
 
 [assembly: System.Reflection.Metadata.MetadataUpdateHandler( typeof( HotReloadManager ) )]
 
-namespace Mocha.Engine;
+namespace Bango.Engine;
 
 internal static class HotReloadManager
 {

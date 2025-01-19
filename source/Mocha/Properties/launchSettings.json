@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "Mocha": {
+    "Bango": {
       "commandName": "Project",
-      "workingDirectory": "F:\\Projects\\Mocha"
+      "workingDirectory": "F:\\Projects\\Bango"
     }
   }
 }

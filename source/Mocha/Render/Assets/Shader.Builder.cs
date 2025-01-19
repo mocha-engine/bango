@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Veldrid.SPIRV;
 
-namespace Mocha.Renderer;
+namespace Bango.Renderer;
 
 public class ShaderBuilder
 {

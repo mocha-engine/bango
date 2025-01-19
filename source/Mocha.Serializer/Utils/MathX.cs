@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Numerics;
 
-namespace Mocha.Common;
+namespace Bango.Common;
 
 public static class MathX
 {

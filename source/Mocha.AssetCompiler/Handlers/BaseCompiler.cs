@@ -1,4 +1,4 @@
-﻿namespace Mocha.AssetCompiler;
+﻿namespace Bango.AssetCompiler;
 
 [Handles( new[] { ".png", ".jpg" } )]
 public abstract class BaseCompiler

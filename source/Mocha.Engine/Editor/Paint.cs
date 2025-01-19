@@ -1,6 +1,6 @@
-﻿using Mocha.Renderer.UI;
+﻿using Bango.Renderer.UI;
 
-namespace Mocha;
+namespace Bango;
 
 public static class Paint
 {

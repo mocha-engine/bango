@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mocha.Common;
+using Bango.Common;
 
-namespace Mocha.Tests;
+namespace Bango.Tests;
 
 [TestClass]
 public class EventTests

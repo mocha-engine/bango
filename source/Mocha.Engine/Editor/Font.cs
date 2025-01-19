@@ -1,4 +1,4 @@
-﻿namespace Mocha;
+﻿namespace Bango;
 
 public sealed partial class Font
 {

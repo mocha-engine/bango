@@ -1,6 +1,6 @@
 ﻿using Veldrid;
 
-namespace Mocha.Renderer;
+namespace Bango.Renderer;
 
 [Icon( FontAwesome.Image ), Title( "Texture" )]
 public class Texture : Asset

@@ -1,4 +1,4 @@
-﻿namespace Mocha.Engine.Editor;
+﻿namespace Bango.Engine.Editor;
 
 internal class Image : Widget
 {

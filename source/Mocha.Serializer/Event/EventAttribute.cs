@@ -1,4 +1,4 @@
-﻿namespace Mocha.Common;
+﻿namespace Bango.Common;
 
 [AttributeUsage( AttributeTargets.Method, AllowMultiple = true )]
 public class EventAttribute : Attribute

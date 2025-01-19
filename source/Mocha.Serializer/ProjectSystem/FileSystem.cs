@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Mocha.Common;
+namespace Bango.Common;
 
 public class FileSystem
 {

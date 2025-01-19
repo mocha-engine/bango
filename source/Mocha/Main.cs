@@ -1,1 +1,1 @@
-﻿global using static Mocha.Renderer.Global;
+﻿global using static Bango.Renderer.Global;

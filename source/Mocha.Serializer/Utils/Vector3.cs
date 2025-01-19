@@ -1,4 +1,4 @@
-﻿namespace Mocha.Common;
+﻿namespace Bango.Common;
 
 public struct Vector3 : IEquatable<Vector3>
 {

@@ -1,4 +1,4 @@
-﻿namespace Mocha.Renderer;
+﻿namespace Bango.Renderer;
 
 [Flags]
 public enum RenderPass

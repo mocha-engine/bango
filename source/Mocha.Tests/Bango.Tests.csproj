@@ -17,10 +17,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Mocha.AssetCompiler\Mocha.AssetCompiler.csproj" />
-		<ProjectReference Include="..\Mocha.Engine\Mocha.Engine.csproj" />
-		<ProjectReference Include="..\Mocha.Serializer\Mocha.Common.csproj" />
-		<ProjectReference Include="..\Mocha\Mocha.Renderer.csproj" />
+		<ProjectReference Include="..\Mocha.AssetCompiler\Bango.Legacy.csproj" />
+		<ProjectReference Include="..\Mocha.Engine\Bango.Core.csproj" />
+		<ProjectReference Include="..\Mocha.Serializer\Bango.Common.csproj" />
+		<ProjectReference Include="..\Mocha\Bango.Renderer.csproj" />
 	</ItemGroup>
 
 </Project>

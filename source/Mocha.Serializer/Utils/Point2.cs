@@ -1,5 +1,5 @@
 ﻿
-namespace Mocha.Common;
+namespace Bango.Common;
 
 public struct Point2
 {

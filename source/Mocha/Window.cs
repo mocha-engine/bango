@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Veldrid.Sdl2;
 
-namespace Mocha.Renderer;
+namespace Bango.Renderer;
 
 public class Window
 {
@@ -28,7 +28,7 @@ public class Window
 		Current ??= this;
 
 		var windowFlags = SDL_WindowFlags.OpenGL | SDL_WindowFlags.AllowHighDpi | SDL_WindowFlags.Shown | SDL_WindowFlags.Resizable;
-		SdlWindow = new Sdl2Window( "Mocha", 128, 128, 1280, 720, windowFlags, threadedProcessing: false );
+		SdlWindow = new Sdl2Window( "Bango", 128, 128, 1280, 720, windowFlags, threadedProcessing: false );
 
 		Screen.UpdateFrom( Size );
 	}

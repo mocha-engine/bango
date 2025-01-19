@@ -1,8 +1,8 @@
-﻿using Mocha.Common.Serialization;
+﻿using Bango.Common.Serialization;
 using StbImageSharp;
 using System.Runtime.InteropServices;
 
-namespace Mocha.Renderer;
+namespace Bango.Renderer;
 
 public partial class TextureBuilder
 {

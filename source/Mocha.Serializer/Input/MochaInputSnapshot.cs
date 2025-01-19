@@ -2,9 +2,9 @@
 using System.Linq;
 using Veldrid.Sdl2;
 
-namespace Mocha.Common;
+namespace Bango.Common;
 
-public class MochaInputSnapshot : InputSnapshot
+public class BangoInputSnapshot : InputSnapshot
 {
 	#region "InputSnapshot Interface"
 	public IReadOnlyList<KeyEvent>? KeyEvents { get; internal set; }

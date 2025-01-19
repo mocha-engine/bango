@@ -1,4 +1,4 @@
-﻿namespace Mocha.AssetCompiler;
+﻿namespace Bango.AssetCompiler;
 
 [AttributeUsage( AttributeTargets.Class, AllowMultiple = false, Inherited = false )]
 public class HandlesAttribute : Attribute

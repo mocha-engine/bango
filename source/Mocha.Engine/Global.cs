@@ -1,9 +1,9 @@
-﻿global using Mocha.Common;
-global using Mocha.Renderer;
-global using Mocha.Engine.Editor;
+﻿global using Bango.Common;
+global using Bango.Renderer;
+global using Bango.Engine.Editor;
 global using System.ComponentModel;
 
-namespace Mocha.Engine;
+namespace Bango.Engine;
 
 public static class Global
 {

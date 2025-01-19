@@ -1,1 +1,1 @@
-﻿global using static Mocha.Common.Global;
+﻿global using static Bango.Common.Global;

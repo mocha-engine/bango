@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace Mocha.Common;
+namespace Bango.Common;
 
 public class DisplayInfo
 {

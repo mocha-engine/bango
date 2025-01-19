@@ -1,4 +1,4 @@
-﻿namespace Mocha.Renderer.UI;
+﻿namespace Bango.Renderer.UI;
 
 [Icon( FontAwesome.Square ), Title( "UI" )]
 public partial class PanelRenderer

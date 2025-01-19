@@ -1,6 +1,6 @@
-﻿namespace Mocha.Common;
+﻿namespace Bango.Common;
 
-public struct MochaFile<T>
+public struct BangoFile<T>
 {
 	//
 	// Compile info

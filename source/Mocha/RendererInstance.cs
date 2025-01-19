@@ -2,7 +2,7 @@
 using Veldrid.Sdl2;
 using Veldrid.StartupUtilities;
 
-namespace Mocha.Renderer;
+namespace Bango.Renderer;
 
 public class RendererInstance
 {

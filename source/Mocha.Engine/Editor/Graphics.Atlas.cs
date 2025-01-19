@@ -1,6 +1,6 @@
-﻿using Mocha.Renderer.UI;
+﻿using Bango.Renderer.UI;
 
-namespace Mocha.Engine.Editor;
+namespace Bango.Engine.Editor;
 partial class Graphics
 {
 	internal static Texture UITexture { get; set; }

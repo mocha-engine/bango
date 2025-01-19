@@ -1,6 +1,6 @@
 ﻿using Veldrid.Sdl2;
 
-namespace Mocha.Common;
+namespace Bango.Common;
 
 partial class Input
 {

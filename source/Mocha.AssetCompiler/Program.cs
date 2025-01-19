@@ -1,7 +1,7 @@
-﻿global using Mocha.Common;
+﻿global using Bango.Common;
 using System.Reflection;
 
-namespace Mocha.AssetCompiler;
+namespace Bango.AssetCompiler;
 
 public static class Program
 {

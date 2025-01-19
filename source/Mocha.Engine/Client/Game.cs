@@ -1,4 +1,4 @@
-﻿namespace Mocha.Engine;
+﻿namespace Bango.Engine;
 
 /// <summary>
 /// Handles the creation of various game systems.

@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Mocha.Engine": {
+    "Bango.Engine": {
       "commandName": "Project",
       "workingDirectory": "$(SolutionDir)\\.."
     }

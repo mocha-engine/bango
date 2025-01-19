@@ -38,8 +38,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Mocha.AssetCompiler\Mocha.AssetCompiler.csproj" />
-		<ProjectReference Include="..\Mocha.Serializer\Mocha.Common.csproj" />
+		<ProjectReference Include="..\Mocha.AssetCompiler\Bango.Legacy.csproj" />
+		<ProjectReference Include="..\Mocha.Serializer\Bango.Common.csproj" />
 	</ItemGroup>
 
 </Project>

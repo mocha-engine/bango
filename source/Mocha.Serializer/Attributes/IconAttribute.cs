@@ -1,4 +1,4 @@
-﻿namespace Mocha.Common;
+﻿namespace Bango.Common;
 
 [AttributeUsage( AttributeTargets.Class, AllowMultiple = false, Inherited = false )]
 public class IconAttribute : Attribute

@@ -1,4 +1,4 @@
-﻿namespace Mocha.Renderer.UI;
+﻿namespace Bango.Renderer.UI;
 
 public class AtlasBuilder
 {

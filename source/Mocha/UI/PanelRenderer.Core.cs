@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Mocha.Renderer.UI;
+namespace Bango.Renderer.UI;
 partial class PanelRenderer
 {
 	private ResourceSet objectResourceSet;

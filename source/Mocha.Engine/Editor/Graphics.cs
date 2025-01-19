@@ -1,8 +1,8 @@
-﻿using Mocha.Common;
-using Mocha.Renderer.UI;
+﻿using Bango.Common;
+using Bango.Renderer.UI;
 using System.Drawing.Imaging;
 
-namespace Mocha.Engine.Editor;
+namespace Bango.Engine.Editor;
 
 [Flags]
 public enum RoundingFlags

@@ -1,10 +1,10 @@
 ﻿using BCnEncoder.Encoder;
 using BCnEncoder.Shared;
-using Mocha.Common.Serialization;
+using Bango.Common.Serialization;
 using StbImageSharp;
 using System.Security.Cryptography;
 
-namespace Mocha.AssetCompiler;
+namespace Bango.AssetCompiler;
 
 [Handles( new[] { ".png", ".jpg" } )]
 public class TextureCompiler : BaseCompiler
@@ -35,9 +35,9 @@ public class TextureCompiler : BaseCompiler
 		// TODO: Move to a nice generic function somewhere
 		if ( File.Exists( destFileName ) )
 		{
-			// Read mocha file
+			// Read Bango file
 			var existingFile = File.ReadAllBytes( destFileName );
-			var deserializedFile = Serializer.Deserialize<MochaFile<TextureInfo>>( existingFile );
+			var deserializedFile = Serializer.Deserialize<BangoFile<TextureInfo>>( existingFile );
 
 			using var md5 = MD5.Create();
 			var computedHash = md5.ComputeHash( fileData );
@@ -81,7 +81,7 @@ public class TextureCompiler : BaseCompiler
 		}
 
 		// Wrapper for file
-		var mochaFile = new MochaFile<TextureInfo>()
+		var BangoFile = new BangoFile<TextureInfo>()
 		{
 			MajorVersion = 3,
 			MinorVersion = 1,
@@ -90,13 +90,13 @@ public class TextureCompiler : BaseCompiler
 
 		// Calculate original asset hash
 		using ( var md5 = MD5.Create() )
-			mochaFile.AssetHash = md5.ComputeHash( fileData );
+			BangoFile.AssetHash = md5.ComputeHash( fileData );
 
 		// Write result
 		using var fileStream = new FileStream( destFileName, FileMode.Create );
 		using var binaryWriter = new BinaryWriter( fileStream );
 
-		binaryWriter.Write( Serializer.Serialize( mochaFile ) );
+		binaryWriter.Write( Serializer.Serialize( BangoFile ) );
 		return destFileName;
 	}
 }

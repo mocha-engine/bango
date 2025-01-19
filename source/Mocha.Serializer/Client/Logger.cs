@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Mocha.Common;
+namespace Bango.Common;
 
 public class Logger
 {

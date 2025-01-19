@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Mocha;
+namespace Bango;
 
 partial class Font
 {

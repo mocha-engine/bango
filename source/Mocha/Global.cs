@@ -1,9 +1,9 @@
-﻿global using Mocha.Common;
+﻿global using Bango.Common;
 global using Veldrid;
 global using Matrix4x4 = System.Numerics.Matrix4x4;
 global using Vector4 = System.Numerics.Vector4;
 
-namespace Mocha.Renderer;
+namespace Bango.Renderer;
 
 public static class Global
 {

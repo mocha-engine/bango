@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-namespace Mocha;
+namespace Bango;
 
 public class Color
 {
