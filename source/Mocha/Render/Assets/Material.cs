@@ -31,7 +31,7 @@ public class Material : Asset
 		return new()
 		{
 			Path = path,
-			DiffuseTexture = TextureBuilder.Default.FromPath( materialFormat.Data.DiffuseTexture ).Build()
+			DiffuseTexture = Texture.Builder.FromPath( materialFormat.Data.DiffuseTexture ).Build()
 		};
 	}
 }

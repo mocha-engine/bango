@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Mocha.Serializer\Mocha.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Handlers\Material\" />
+  </ItemGroup>
+
 </Project>

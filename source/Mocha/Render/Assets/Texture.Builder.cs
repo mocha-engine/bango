@@ -1,4 +1,5 @@
 ﻿using Mocha.Common.Serialization;
+using StbImageSharp;
 using System.Runtime.InteropServices;
 
 namespace Mocha.Renderer;
@@ -7,7 +8,7 @@ public partial class TextureBuilder
 {
 	private string type = "texture_diffuse";
 
-	private byte[][] data;
+	private byte[] data;
 	private uint width;
 	private uint height;
 
@@ -16,7 +17,6 @@ public partial class TextureBuilder
 	private bool isRenderTarget;
 	private TextureUsage textureUsage = TextureUsage.Sampled;
 
-	private int mipCount = 1;
 	private PixelFormat compressionFormat;
 
 	private bool ignoreCache;
@@ -24,10 +24,6 @@ public partial class TextureBuilder
 	public TextureBuilder()
 	{
 	}
-
-	public static TextureBuilder Default => new TextureBuilder();
-	public static TextureBuilder WorldTexture => new TextureBuilder();
-	public static TextureBuilder UITexture => new TextureBuilder();
 
 	private static bool TryGetExistingTexture( string path, out Texture texture )
 	{
@@ -50,7 +46,7 @@ public partial class TextureBuilder
 		var textureDescription = TextureDescription.Texture2D(
 			width,
 			height,
-			(uint)mipCount,
+			1,
 			1,
 			compressionFormat,
 			textureUsage
@@ -60,30 +56,21 @@ public partial class TextureBuilder
 
 		if ( !isRenderTarget )
 		{
-			for ( int i = 0; i < mipCount; i++ )
-			{
-				int mip = i;
+			var dataPtr = Marshal.AllocHGlobal( data.Length );
 
-				var mipData = data[mip];
-				var mipDataPtr = Marshal.AllocHGlobal( mipData.Length );
-
-				int mipWidth = MathX.CalcMipSize( (int)width, mip );
-				int mipHeight = MathX.CalcMipSize( (int)height, mip );
-
-				Marshal.Copy( mipData, 0, mipDataPtr, mipData.Length );
-				Device.UpdateTexture( texture,
-							mipDataPtr,
-							(uint)mipData.Length,
-							0,
-							0,
-							0,
-							(uint)mipWidth,
-							(uint)mipHeight,
-							1,
-							(uint)i,
-							0 );
-				Marshal.FreeHGlobal( mipDataPtr );
-			}
+			Marshal.Copy( data, 0, dataPtr, data.Length );
+			Device.UpdateTexture( texture,
+						dataPtr,
+						(uint)data.Length,
+						0,
+						0,
+						0,
+						width,
+						height,
+						1,
+						0,
+						0 );
+			Marshal.FreeHGlobal( dataPtr );
 		}
 
 		var textureView = Device.ResourceFactory.CreateTextureView( texture );
@@ -103,14 +90,13 @@ public partial class TextureBuilder
 		if ( TryGetExistingTexture( path, out _ ) )
 			return new TextureBuilder() { path = path };
 
-		var fileBytes = FileSystem.Game.ReadAllBytes( path );
+		var fileData = FileSystem.Game.ReadAllBytes( path );
+		var image = ImageResult.FromMemory( fileData, ColorComponents.RedGreenBlueAlpha );
 
-		var textureFormat = Serializer.Deserialize<MochaFile<TextureInfo>>( fileBytes );
-		this.width = textureFormat.Data.Width;
-		this.height = textureFormat.Data.Height;
-		this.data = textureFormat.Data.MipData;
-		this.compressionFormat = textureFormat.Data.CompressionFormat;
-		this.mipCount = textureFormat.Data.MipCount;
+		this.width = (uint)image.Width;
+		this.height = (uint)image.Height;
+		this.data = image.Data;
+		this.compressionFormat = PixelFormat.R8_G8_B8_A8_UNorm;
 		this.path = path;
 
 		return this;
@@ -118,7 +104,7 @@ public partial class TextureBuilder
 
 	public TextureBuilder FromData( byte[] data, uint width, uint height )
 	{
-		this.data = new[] { data };
+		this.data = data;
 		this.width = width;
 		this.height = height;
 
@@ -129,7 +115,7 @@ public partial class TextureBuilder
 	{
 		var dataLength = (int)(width * height * 4);
 
-		this.data = new[] { Enumerable.Repeat( (byte)0, dataLength ).ToArray() };
+		this.data = Enumerable.Repeat( (byte)0, dataLength ).ToArray();
 		this.width = width;
 		this.height = height;
 
@@ -146,13 +132,6 @@ public partial class TextureBuilder
 	public TextureBuilder WithName( string name )
 	{
 		this.path = name;
-
-		return this;
-	}
-
-	public TextureBuilder WithNoMips()
-	{
-		this.mipCount = 1;
 
 		return this;
 	}
