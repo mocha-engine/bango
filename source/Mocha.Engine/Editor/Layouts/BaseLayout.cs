@@ -18,7 +18,7 @@ internal class BaseLayout
 	{
 		get
 		{
-			if ( Size.Length > 0 )
+			if ( Size.X > 0 && Size.Y > 0 )
 				return Size;
 
 			return calculatedSize;

@@ -27,9 +27,26 @@ internal class VerticalLayout : BaseLayout
 	}
 }
 
-// TODO
 internal class HorizontalLayout : BaseLayout
 {
+	public override void CalculateWidgetBounds( Widget widget, bool stretch )
+	{
+		var desiredSize = widget.GetDesiredSize();
+		widget.Bounds = new Rectangle( cursor + Margin, desiredSize );
+		cursor = cursor.WithX( cursor.X + desiredSize.X + Spacing );
+
+		if ( desiredSize.Y > calculatedSize.Y )
+			calculatedSize = calculatedSize.WithY( desiredSize.Y );
+		if ( cursor.X > calculatedSize.X )
+			calculatedSize = calculatedSize.WithX( cursor.X );
+
+		if ( stretch )
+		{
+			var calculatedRect = widget.RelativeBounds;
+			calculatedRect.Height = CalculatedSize.Y - (Margin.Y * 2.0f);
+			widget.Bounds = calculatedRect;
+		}
+	}
 }
 
 internal class GridLayout : BaseLayout
