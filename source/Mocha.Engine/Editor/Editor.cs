@@ -2,9 +2,8 @@
 
 internal partial class EditorInstance
 {
+	private BaseLayout RootLayout { get; set; }
 	internal static EditorInstance Instance { get; private set; }
-
-	private List<Window> Windows = new();
 
 	internal EditorInstance()
 	{
@@ -13,21 +12,37 @@ internal partial class EditorInstance
 
 		Graphics.Init();
 
-		var window = new Window();
-		window.Bounds = new Rectangle( 32, 32, 500, 650 );
-		window.CreateUI();
-		Windows.Add( window );
+		CreateUI();
+	}
 
-		var window2 = new Window2();
-		window2.Bounds = new Rectangle( 128, 32, 500, 600 );
-		window2.CreateUI();
-		Windows.Add( window2 );
+	public virtual void CreateUI()
+	{
+		using var _ = new Stopwatch( "CreateUI" );
+
+		foreach ( var item in Widget.All.ToArray() )
+		{
+			item.Delete();
+		}
+
+		//
+		// Everything has to go inside a layout otherwise they'll go in funky places
+		//
+		RootLayout = new HorizontalLayout
+		{
+			Size = new Vector2( -1, -1 )
+		};
+
+		RootLayout.Spacing = 8;
+		RootLayout.Margin = new( 16, 16 );
+
+		RootLayout.Add( new Button( "OK" ), false );
+		RootLayout.Add( new Button( "I am a really long button with some really long text inside it" ), false );
 	}
 
 	internal void Render( Veldrid.CommandList commandList )
 	{
 		Graphics.PanelRenderer.NewFrame();
-		Graphics.DrawRect( new Rectangle( 0, (Vector2)Screen.Size ), ITheme.Current.BackgroundColor * 1.25f );
+		Graphics.DrawRect( new Rectangle( 0, (Vector2)Screen.Size ), Vector4.One, Vector4.Zero );
 
 		RenderWidgets();
 
@@ -61,31 +76,9 @@ internal partial class EditorInstance
 		}
 	}
 
-	internal string GetCurrentTheme()
+	[Event.Window.Resized]
+	public void OnWindowResized( Point2 newSize )
 	{
-		if ( ITheme.Current is LightTheme )
-			return "Light Theme";
-		if ( ITheme.Current is DarkTheme )
-			return "Dark Theme";
-		if ( ITheme.Current is TestTheme )
-			return "Test Theme";
-
-		return "???";
-	}
-
-	internal void SwitchTheme( int newSelection )
-	{
-		Log.Trace( newSelection );
-
-		if ( newSelection == 0 )
-			ITheme.Current = new DarkTheme();
-		else if ( newSelection == 1 )
-			ITheme.Current = new LightTheme();
-		else
-			ITheme.Current = new TestTheme();
-
-		Renderer.Window.Current.SetDarkMode( ITheme.Current is not LightTheme );
-
-		Windows.ForEach( x => x.CreateUI() );
+		CreateUI();
 	}
 }
