@@ -1,6 +1,6 @@
-# Mocha.UI
+# Bango
 
-Mocha.UI is a hard fork of [Mocha](https://github.com/mocha-engine/mocha/) at commit 85fda37be7d50b7c22effe81a112ead5ba00b2fb
+Bango is a hard fork of [Mocha](https://github.com/mocha-engine/mocha/) at commit 85fda37be7d50b7c22effe81a112ead5ba00b2fb
 
 ## Why
 
