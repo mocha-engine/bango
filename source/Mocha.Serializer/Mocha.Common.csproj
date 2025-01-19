@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Veldrid" Version="4.8.0" />
-    <PackageReference Include="Veldrid.Sdl2" Version="4.8.0" />
+    <PackageReference Include="Veldrid.Sdl2" Version="4.9.0" />
   </ItemGroup>
 
 </Project>
