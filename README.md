@@ -10,8 +10,9 @@ My goal is to build this into something a little more mature that other people c
 
 ## TODO
 
-- Strip out any game-related code
+- Layout engine
+- Layout as data
+- Styling as data
 - Add additional baseline UI widgets
-- Improve UI API
 - Improve UI batched rendering
 - Optimizations
