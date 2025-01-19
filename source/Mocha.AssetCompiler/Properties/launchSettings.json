@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Bango.AssetCompiler": {
-      "commandName": "Project",
-      "commandLineArgs": ".",
-      "workingDirectory": "F:\\Projects\\Bango\\Content\\"
-    }
-  }
-}

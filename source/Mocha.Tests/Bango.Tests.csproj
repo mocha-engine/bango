@@ -17,7 +17,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Mocha.AssetCompiler\Bango.Legacy.csproj" />
 		<ProjectReference Include="..\Mocha.Engine\Bango.Core.csproj" />
 		<ProjectReference Include="..\Mocha.Serializer\Bango.Common.csproj" />
 		<ProjectReference Include="..\Mocha\Bango.Renderer.csproj" />
