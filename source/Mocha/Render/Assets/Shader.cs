@@ -7,7 +7,6 @@ namespace Mocha.Renderer;
 public class Shader : Asset
 {
 	public Veldrid.Shader[] ShaderProgram { get; private set; }
-	public RenderPipeline Pipeline { get; set; }
 	public Action OnRecompile { get; set; }
 	public bool IsDirty { get; private set; }
 

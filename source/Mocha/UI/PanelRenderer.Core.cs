@@ -7,10 +7,10 @@ partial class PanelRenderer
 	private uint indexCount;
 	private bool isDirty = false;
 
-	private DeviceBuffer uniformBuffer;
 	private DeviceBuffer vertexBuffer;
 	private DeviceBuffer indexBuffer;
-	private Material material;
+	private Shader shader;
+	private RenderPipeline pipeline;
 
 	private void UpdateIndexBuffer( uint[] indices )
 	{
@@ -50,24 +50,15 @@ partial class PanelRenderer
 	{
 		Log.Info( $"Updating PanelRenderer object resource set" );
 
-		material.DiffuseTexture = AtlasBuilder.Texture;
-		Log.Info( $"New atlas has size {material.DiffuseTexture.Size}" );
+		Log.Info( $"New atlas has size {AtlasBuilder.Texture.Size}" );
 
 		var objectResourceSetDescription = new ResourceSetDescription(
-			material.Shader.Pipeline.ResourceLayouts[0],
-			material.DiffuseTexture?.VeldridTexture ?? TextureBuilder.MissingTexture.VeldridTexture,
-			Device.Aniso4xSampler,
-			uniformBuffer );
+			pipeline.ResourceLayouts[0],
+			AtlasBuilder.Texture.VeldridTexture,
+			Device.Aniso4xSampler
+		);
 
 		objectResourceSet = Device.ResourceFactory.CreateResourceSet( objectResourceSetDescription );
-	}
-
-	private void CreateUniformBuffer()
-	{
-		uint uboSizeInBytes = 4 * (uint)Marshal.SizeOf( material.UniformBufferType );
-		uniformBuffer = Device.ResourceFactory.CreateBuffer(
-			new BufferDescription( uboSizeInBytes,
-				BufferUsage.UniformBuffer | BufferUsage.Dynamic ) );
 	}
 
 	private void UpdateBuffers()
@@ -95,16 +86,8 @@ partial class PanelRenderer
 		if ( objectResourceSet == null )
 			return;
 
-		RenderPipeline renderPipeline = material.Shader.Pipeline;
-
-		var uniformBufferContents = new UIUniformBuffer()
-		{
-			vSdfRange = new Vector4( 0.1f, 0.0f, 0.1f, 0.1f )
-		};
-
 		commandList.SetVertexBuffer( 0, vertexBuffer );
-		commandList.UpdateBuffer( uniformBuffer, 0, new[] { uniformBufferContents } );
-		commandList.SetPipeline( renderPipeline.Pipeline );
+		commandList.SetPipeline( pipeline.VeldridPipeline );
 
 		commandList.SetGraphicsResourceSet( 0, objectResourceSet );
 

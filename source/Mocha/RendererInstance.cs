@@ -6,11 +6,11 @@ namespace Mocha.Renderer;
 
 public class RendererInstance
 {
-	public Window window;
+	public Window Window;
 
-	private DateTime lastFrame;
+	private DateTime _lastFrame;
 
-	private CommandList commandList;
+	private CommandList _commandList;
 
 	public Action PreUpdate;
 	public Action OnUpdate;
@@ -18,7 +18,7 @@ public class RendererInstance
 
 	public Action<CommandList> RenderOverlays;
 
-	public static RendererInstance Current;
+	public static RendererInstance Current { get; private set; } = null!;
 
 	public RendererInstance()
 	{
@@ -26,24 +26,24 @@ public class RendererInstance
 		Event.Register( this );
 
 		Init();
-		lastFrame = DateTime.Now;
+		_lastFrame = DateTime.Now;
 	}
 
 	private void Init()
 	{
-		window = new();
+		Window = new();
 
 		CreateGraphicsDevice();
 		// Swap the buffers so that the screen isn't a mangled mess
 		Device.SwapBuffers();
-		CreateFb();
+		CreateMultisampledFramebuffer();
 
-		commandList = Device.ResourceFactory.CreateCommandList();
+		_commandList = Device.ResourceFactory.CreateCommandList();
 	}
 
-	private void CreateFb()
+	private void CreateMultisampledFramebuffer()
 	{
-		var ctd = TextureDescription.Texture2D(
+		var colorTextureInfo = TextureDescription.Texture2D(
 			(uint)(Screen.RawSize.X),
 			(uint)(Screen.RawSize.Y),
 			1,
@@ -53,27 +53,28 @@ public class RendererInstance
 			TextureSampleCount.Count4
 		);
 
-		var ct = Device.ResourceFactory.CreateTexture( ctd );
+		var colorTexture = Device.ResourceFactory.CreateTexture( colorTextureInfo );
 
-		ctd.SampleCount = TextureSampleCount.Count1;
-		ctd.Usage = TextureUsage.Sampled;
-		resolve = Device.ResourceFactory.CreateTexture( ctd );
+		colorTextureInfo.SampleCount = TextureSampleCount.Count1;
+		colorTextureInfo.Usage = TextureUsage.Sampled;
 
-		var fbad = new FramebufferAttachmentDescription( ct, 0 );
-		var fbd = new FramebufferDescription()
+		ResolveTexture = Device.ResourceFactory.CreateTexture( colorTextureInfo );
+
+		var framebufferAttachmentInfo = new FramebufferAttachmentDescription( colorTexture, 0 );
+		var framebufferDescription = new FramebufferDescription()
 		{
-			ColorTargets = [fbad]
+			ColorTargets = [framebufferAttachmentInfo]
 		};
 
-		fb = Device.ResourceFactory.CreateFramebuffer( fbd );
+		MultisampledFramebuffer = Device.ResourceFactory.CreateFramebuffer( framebufferDescription );
 	}
 
-	public Framebuffer fb;
-	public Veldrid.Texture resolve;
+	public Framebuffer MultisampledFramebuffer;
+	public Veldrid.Texture ResolveTexture;
 
-	private Pipeline blitPipeline;
-	private ResourceSet blitResourceSet;
-	private ResourceLayout blitResourceLayout;
+	private Pipeline _blitPipeline;
+	private ResourceSet _blitResourceSet;
+	private ResourceLayout _blitResourceLayout;
 
 	public void Run()
 	{
@@ -82,12 +83,12 @@ public class RendererInstance
 			new ResourceLayoutElementDescription( "g_sSampler", ResourceKind.Sampler, ShaderStages.Fragment )
 		);
 
-		blitResourceLayout = Device.ResourceFactory.CreateResourceLayout( layoutDescription );
+		_blitResourceLayout = Device.ResourceFactory.CreateResourceLayout( layoutDescription );
 
 
 		// Create shader
 		var shader = ShaderBuilder.Default.FromPath( "core/shaders/blit.mshdr" )
-										.WithFramebuffer( fb )
+										.WithFramebuffer( MultisampledFramebuffer )
 										.WithFaceCullMode( FaceCullMode.None )
 										.Build();
 
@@ -102,21 +103,21 @@ public class RendererInstance
 				Array.Empty<VertexLayoutDescription>(),
 				shader.ShaderProgram
 			),
-			new[] { blitResourceLayout },
+			new[] { _blitResourceLayout },
 			Device.MainSwapchain.Framebuffer.OutputDescription
 		);
 
-		blitPipeline = Device.ResourceFactory.CreateGraphicsPipeline( pipelineDescription );
+		_blitPipeline = Device.ResourceFactory.CreateGraphicsPipeline( pipelineDescription );
 
-		blitResourceSet = Device.ResourceFactory.CreateResourceSet( new ResourceSetDescription(
-			blitResourceLayout,
-			resolve,
+		_blitResourceSet = Device.ResourceFactory.CreateResourceSet( new ResourceSetDescription(
+			_blitResourceLayout,
+			ResolveTexture,
 			Device.LinearSampler
 		) );
 
-		OnWindowResized( window.Size );
+		OnWindowResized( Window.Size );
 
-		while ( window.SdlWindow.Exists )
+		while ( Window.SdlWindow.Exists )
 		{
 			Update();
 			PreRender();
@@ -133,43 +134,43 @@ public class RendererInstance
 			shader.Recompile();
 		}
 
-		commandList.Begin();
+		_commandList.Begin();
 	}
 
 	private void PostRender()
 	{
-		commandList.SetFramebuffer( fb ); // Use MSAA framebuffer
-		commandList.SetViewport( 0, new Viewport( 0, 0, fb.Width, fb.Height, 0, 1 ) );
-		commandList.SetFullViewports();
-		commandList.SetFullScissorRects();
-		commandList.ClearColorTarget( 0, RgbaFloat.Black );
+		_commandList.SetFramebuffer( MultisampledFramebuffer ); // Use MSAA framebuffer
+		_commandList.SetViewport( 0, new Viewport( 0, 0, MultisampledFramebuffer.Width, MultisampledFramebuffer.Height, 0, 1 ) );
+		_commandList.SetFullViewports();
+		_commandList.SetFullScissorRects();
+		_commandList.ClearColorTarget( 0, RgbaFloat.Black );
 
 		// Render UI to MSAA buffer
-		commandList.PushDebugGroup( "UI Render" );
-		RenderOverlays?.Invoke( commandList );
-		commandList.PopDebugGroup();
+		_commandList.PushDebugGroup( "UI Render" );
+		RenderOverlays?.Invoke( _commandList );
+		_commandList.PopDebugGroup();
 
 		// Resolve MSAA to non-MSAA texture
-		commandList.ResolveTexture( fb.ColorTargets[0].Target, resolve );
+		_commandList.ResolveTexture( MultisampledFramebuffer.ColorTargets[0].Target, ResolveTexture );
 
 		// Blit to screen
-		commandList.SetFramebuffer( Device.MainSwapchain.Framebuffer );
-		commandList.SetViewport( 0, new Viewport( 0, 0, Device.MainSwapchain.Framebuffer.Width, Device.MainSwapchain.Framebuffer.Height, 0, 1 ) );
+		_commandList.SetFramebuffer( Device.MainSwapchain.Framebuffer );
+		_commandList.SetViewport( 0, new Viewport( 0, 0, Device.MainSwapchain.Framebuffer.Width, Device.MainSwapchain.Framebuffer.Height, 0, 1 ) );
 
-		commandList.SetPipeline( blitPipeline );
-		commandList.SetGraphicsResourceSet( 0, blitResourceSet );
-		commandList.Draw( 3, 1, 0, 0 );
+		_commandList.SetPipeline( _blitPipeline );
+		_commandList.SetGraphicsResourceSet( 0, _blitResourceSet );
+		_commandList.Draw( 3, 1, 0, 0 );
 
-		commandList.End();
+		_commandList.End();
 
-		Device.SubmitCommands( commandList );
+		Device.SubmitCommands( _commandList );
 		Device.SwapBuffers();
 	}
 
 	private void Update()
 	{
-		float deltaTime = (float)(DateTime.Now - lastFrame).TotalSeconds;
-		lastFrame = DateTime.Now;
+		float deltaTime = (float)(DateTime.Now - _lastFrame).TotalSeconds;
+		_lastFrame = DateTime.Now;
 
 		Time.UpdateFrom( deltaTime );
 
@@ -190,8 +191,8 @@ public class RendererInstance
 			HasMainSwapchain = true
 		};
 
-		var swapchainSource = VeldridStartup.GetSwapchainSource( window.SdlWindow );
-		Device = GraphicsDevice.CreateD3D11( swapchainDescription: new SwapchainDescription( swapchainSource, (uint)(window.Size.X), (uint)(window.Size.Y), options.SwapchainDepthFormat, options.SyncToVerticalBlank, options.SwapchainSrgbFormat ), options: options );
+		var swapchainSource = VeldridStartup.GetSwapchainSource( Window.SdlWindow );
+		Device = GraphicsDevice.CreateD3D11( swapchainDescription: new SwapchainDescription( swapchainSource, (uint)(Window.Size.X), (uint)(Window.Size.Y), options.SwapchainDepthFormat, options.SyncToVerticalBlank, options.SwapchainSrgbFormat ), options: options );
 	}
 
 	[Event.Window.Resized]
@@ -200,21 +201,18 @@ public class RendererInstance
 		var dpiScale = 1.0f;
 		Device.MainSwapchain.Resize( (uint)(newSize.X * dpiScale), (uint)(newSize.Y * dpiScale) );
 
-		uint width = (uint)(newSize.X * dpiScale);
-		uint height = (uint)(newSize.Y * dpiScale);
-
 		// Cleanup old MSAA resources
-		fb?.Dispose();
-		resolve?.Dispose();
+		MultisampledFramebuffer?.Dispose();
+		ResolveTexture?.Dispose();
 
 		// Recreate MSAA resources
-		CreateFb();
+		CreateMultisampledFramebuffer();
 
 		// Recreate blit resources since they depend on the framebuffer
-		blitResourceSet?.Dispose();
-		blitResourceSet = Device.ResourceFactory.CreateResourceSet( new ResourceSetDescription(
-			blitResourceLayout,
-			resolve,
+		_blitResourceSet?.Dispose();
+		_blitResourceSet = Device.ResourceFactory.CreateResourceSet( new ResourceSetDescription(
+			_blitResourceLayout,
+			ResolveTexture,
 			Device.LinearSampler
 		) );
 	}

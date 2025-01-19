@@ -5,17 +5,17 @@ public struct RenderPipeline
 	public static PipelineFactory Factory => new();
 
 	public ResourceLayout[] ResourceLayouts;
-	public Pipeline Pipeline;
+	public Pipeline VeldridPipeline;
 
 	public RenderPipeline( Pipeline pipeline, params ResourceLayout[] resourceSets )
 	{
 		this.ResourceLayouts = resourceSets;
-		this.Pipeline = pipeline;
+		this.VeldridPipeline = pipeline;
 	}
 
 	public void Delete()
 	{
-		Pipeline?.Dispose();
+		VeldridPipeline?.Dispose();
 		ResourceLayouts?.ToList().ForEach( x => x.Dispose() );
 	}
 }

@@ -9,27 +9,20 @@ public partial class PanelRenderer
 	{
 		AtlasBuilder = new();
 
-		var pipeline = RenderPipeline.Factory
-			.WithVertexElementDescriptions( UIVertex.VertexElementDescriptions )
-			.AddObjectResource( "g_tAtlas", ResourceKind.TextureReadOnly, ShaderStages.Fragment )
-			.AddObjectResource( "g_sSampler", ResourceKind.Sampler, ShaderStages.Fragment )
-			.AddObjectResource( "g_oUbo", ResourceKind.UniformBuffer, ShaderStages.Fragment | ShaderStages.Vertex );
-
-		var shader = ShaderBuilder.Default.FromPath( "core/shaders/ui/ui.mshdr" )
-			.WithFramebuffer( RendererInstance.Current.fb )
-			.WithCustomPipeline( pipeline )
+		shader = ShaderBuilder.Default.FromPath( "core/shaders/ui/ui.mshdr" )
+			.WithFramebuffer( RendererInstance.Current.MultisampledFramebuffer )
 			.Build();
 
-		material = new Material()
-		{
-			UniformBufferType = typeof( UIUniformBuffer ),
-			Shader = shader
-		};
+		pipeline = RenderPipeline.Factory
+			.AddObjectResource( "g_tAtlas", ResourceKind.TextureReadOnly, ShaderStages.Fragment )
+			.AddObjectResource( "g_sSampler", ResourceKind.Sampler, ShaderStages.Fragment )
+			.WithVertexElementDescriptions( UIVertex.VertexElementDescriptions )
+			.WithFramebuffer( RendererInstance.Current.MultisampledFramebuffer )
+			.WithShader( shader )
+			.Build();
 
 		AtlasBuilder.OnBuild += CreateResources;
-		material.Shader.OnRecompile += CreateResources;
-
-		CreateUniformBuffer();
+		shader.OnRecompile += CreateResources;
 	}
 
 	public void NewFrame()
