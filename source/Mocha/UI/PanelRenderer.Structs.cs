@@ -19,17 +19,6 @@ partial class PanelRenderer
 	private List<UIVertex> Vertices = new();
 
 	[StructLayout( LayoutKind.Sequential )]
-	public struct UIUniformBuffer
-	{
-		/*
-		 * These fields are padded so that they're
-		 * aligned (as blocks) to multiples of 16.
-		 */
-
-		public Vector4 vSdfRange;
-	}
-
-	[StructLayout( LayoutKind.Sequential )]
 	public struct UIVertex
 	{
 		public Vector3 Position { get; set; }
