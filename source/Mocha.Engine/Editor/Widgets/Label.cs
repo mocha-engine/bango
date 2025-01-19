@@ -5,11 +5,8 @@ internal class Label : Widget
 	private string calculatedText = "";
 	private string text;
 
-	// TODO: font loader & cache
-	internal Font.Data FontData { get; set; }
-	internal Texture FontTexture { get; set; }
-	internal Font.Data IconData { get; set; }
-	internal Texture IconTexture { get; set; }
+	internal Font Font { get; set; }
+	internal Font IconFont { get; set; }
 
 	public string Text
 	{
@@ -20,23 +17,23 @@ internal class Label : Widget
 		}
 	}
 
-	public Vector4 Color { get; set; } = ITheme.Current.TextColor;
-	public float FontSize { get; set; } = 12;
+	public Color Color { get; set; } = Color.Black;
+	public float FontSize { get; set; } = 13;
 
 	private Font.Data GetFontDataForGlyph( char c )
 	{
 		if ( c > FontAwesome.IconMin )
-			return IconData;
+			return IconFont.FontData;
 
-		return FontData;
+		return Font.FontData;
 	}
 
 	private Texture GetTextureForGlyph( char c )
 	{
 		if ( c > FontAwesome.IconMin )
-			return IconTexture;
+			return IconFont.FontTexture;
 
-		return FontTexture;
+		return Font.FontTexture;
 	}
 
 	public Vector2 MeasureText( string text, float fontSize )
@@ -55,10 +52,11 @@ internal class Label : Widget
 			x += (float)glyph.Advance * fontSize;
 		}
 
+		// ????
 		return new Vector2( x, fontSize * 1.25f );
 	}
 
-	internal Label( string text, float fontSize = 12, string fontFamily = "sourcesanspro" ) : base()
+	internal Label( string text, float fontSize = 13, string fontFamily = "inter" ) : base()
 	{
 		FontSize = fontSize;
 		Text = text;
@@ -86,10 +84,10 @@ internal class Label : Widget
 	{
 		float x = 0;
 
-		if ( FontData == null )
+		if ( Font.FontData == null )
 			return;
 
-		if ( FontTexture == null )
+		if ( Font.FontTexture == null )
 			return;
 
 		foreach ( var c in calculatedText )
@@ -107,13 +105,13 @@ internal class Label : Widget
 				var glyphRect = FontBoundsToAtlasRect( glyph, glyph.AtlasBounds );
 
 				var glyphSize = new Vector2( glyphRect.Width, glyphRect.Height );
-				glyphSize *= FontSize / FontData.Atlas.Size;
+				glyphSize *= FontSize / Font.FontData.Atlas.Size;
 
 				var glyphPos = new Rectangle( new Vector2( Bounds.X + x, Bounds.Y + FontSize ), glyphSize );
 				glyphPos.X += (float)glyph.PlaneBounds.Left * FontSize;
 				glyphPos.Y -= (float)glyph.PlaneBounds.Top * FontSize;
 
-				float screenPxRange = FontData.Atlas.DistanceRange * (glyphPos.Size / FontData.Atlas.Size).Length;
+				float screenPxRange = Font.FontData.Atlas.DistanceRange * (glyphPos.Size / Font.FontData.Atlas.Size).Length;
 				screenPxRange *= 1.5f;
 
 				if ( glyphPos.X > Bounds.X + Bounds.Width && Bounds.Width > 0 )
@@ -133,11 +131,8 @@ internal class Label : Widget
 
 	public void SetFont( string fontName )
 	{
-		FontData = FileSystem.Game.Deserialize<Font.Data>( $"core/fonts/baked/{fontName}.json" );
-		FontTexture = Texture.Builder.FromPath( $"core/fonts/baked/{fontName}.mtex" ).Build();
-
-		IconTexture = Texture.Builder.FromPath( $"core/fonts/baked/fa-solid-900.mtex" ).Build();
-		IconData = FileSystem.Game.Deserialize<Font.Data>( $"core/fonts/baked/fa-solid-900.json" );
+		Font = Font.Load( $"{fontName}" );
+		IconFont = Font.Load( "fa-solid-900" );
 	}
 
 	internal override Vector2 GetDesiredSize()

@@ -1,4 +1,6 @@
-﻿using Mocha.Renderer.UI;
+﻿using Mocha.Common;
+using Mocha.Renderer.UI;
+using System.Drawing.Imaging;
 
 namespace Mocha.Engine.Editor;
 
@@ -22,69 +24,67 @@ public static partial class Graphics
 {
 	internal static PanelRenderer PanelRenderer { get; set; }
 
-	private static GraphicsFlags GetRoundedGraphicsFlags( RoundingFlags roundingFlags )
+	public static void DrawRectangle( Rectangle bounds, RectangleInfo info )
 	{
-		GraphicsFlags graphicsFlags = GraphicsFlags.None;
-
-		if ( roundingFlags.HasFlag( RoundingFlags.TopLeft ) )
-		{
-			graphicsFlags |= GraphicsFlags.RoundedTopLeft;
-		}
-
-		if ( roundingFlags.HasFlag( RoundingFlags.TopRight ) )
-		{
-			graphicsFlags |= GraphicsFlags.RoundedTopRight;
-		}
-
-		if ( roundingFlags.HasFlag( RoundingFlags.BottomLeft ) )
-		{
-			graphicsFlags |= GraphicsFlags.RoundedBottomLeft;
-		}
-
-		if ( roundingFlags.HasFlag( RoundingFlags.BottomRight ) )
-		{
-			graphicsFlags |= GraphicsFlags.RoundedBottomRight;
-		}
-
-		return graphicsFlags;
+		PanelRenderer.AddRectangle( bounds, info );
 	}
 
-	public static void DrawRect( Rectangle bounds, Vector4 colorTop, Vector4 colorBottom, RoundingFlags roundingFlags = RoundingFlags.None )
+	public static void DrawRect( Rectangle bounds, Vector4 colorTop, Vector4 colorBottom, Vector4 rounding )
 	{
-		var flags = GetRoundedGraphicsFlags( roundingFlags );
-		PanelRenderer.AddRectangle( bounds, new Rectangle( 0, 0, 0, 0 ), 0, colorTop, colorBottom, colorTop, colorBottom, flags );
+		var info = new RectangleInfo()
+		{
+			FillMode = FillMode.LinearGradient( colorTop, colorBottom ),
+			Rounding = rounding
+		};
+
+		PanelRenderer.AddRectangle( bounds, info );
 	}
 
-	public static void DrawRect( Rectangle bounds, Vector4 colorA, Vector4 colorB, Vector4 colorC, Vector4 colorD, RoundingFlags roundingFlags = RoundingFlags.None )
+	public static void DrawRect( Rectangle bounds, Vector4 color, Vector4 rounding )
 	{
-		var flags = GetRoundedGraphicsFlags( roundingFlags );
-		PanelRenderer.AddRectangle( bounds, new Rectangle( 0, 0, 0, 0 ), 0, colorA, colorB, colorC, colorD, flags );
+		var info = new RectangleInfo()
+		{
+			FillMode = FillMode.Solid( color ),
+			Rounding = rounding
+		};
+
+		PanelRenderer.AddRectangle( bounds, info );
 	}
 
-	public static void DrawRect( Rectangle bounds, Vector4 color, RoundingFlags roundingFlags = RoundingFlags.None )
-	{
-		var flags = GetRoundedGraphicsFlags( roundingFlags );
-		PanelRenderer.AddRectangle( bounds, new Rectangle( 0, 0, 0, 0 ), 0, color, color, color, color, flags );
-	}
-
-	public static void DrawShadow( Rectangle bounds, float size, float opacity )
+	public static void DrawShadow( Rectangle bounds, float size, FillMode fillMode, Vector4 rounding )
 	{
 		bounds = bounds.Expand( size / 2.0f );
-		bounds.Position += new Vector2( 0, size / 2.0f );
+		bounds.Y += 1;
+
+		var adjustedRounding = rounding + new Vector4( size );
 
 		for ( float i = 0; i < size; ++i )
 		{
 			var currBounds = bounds.Shrink( i );
-			var color = new Vector4( 0, 0, 0, (1f / size) * opacity );
-			PanelRenderer.AddRectangle( currBounds, new Rectangle( 0, 0, 0, 0 ), 0, color, color, color, color, GetRoundedGraphicsFlags( RoundingFlags.All ) );
+
+			var c = fillMode.GetColors().a;
+			c.W = (1f / size) * c.W;
+
+			var rnd = new Vector4(
+				(adjustedRounding.X - i).Clamp( 0, 1000 ),
+				(adjustedRounding.Y - i).Clamp( 0, 1000 ),
+				(adjustedRounding.Z - i).Clamp( 0, 1000 ),
+				(adjustedRounding.W - i).Clamp( 0, 1000 )
+			);
+
+			var info = new RectangleInfo()
+			{
+				FillMode = FillMode.Solid( c ),
+				Rounding = rnd
+			};
+
+			PanelRenderer.AddRectangle( currBounds, info );
 		}
 	}
 
 	public static void DrawCharacter( Rectangle bounds, Texture texture, Rectangle atlasBounds, Vector4 color )
 	{
-		var flags = GraphicsFlags.UseSdf;
-		if ( bounds.Size.Length > 16f )
-			flags |= GraphicsFlags.HighDistMul;
+		var flags = RenderMode.UseSdf;
 
 		var texturePos = PanelRenderer.AtlasBuilder.AddOrGetTexture( texture );
 		var textureSize = PanelRenderer.AtlasBuilder.Texture.Size;
@@ -101,24 +101,17 @@ public static partial class Graphics
 		// Flip y axis
 		atlasBounds.Y = 1.0f - atlasBounds.Y;
 
-		PanelRenderer.AddRectangle( bounds, atlasBounds, 0, color, color, color, color, flags );
+		var info = new RectangleInfo()
+		{
+			FillMode = FillMode.Solid( color ),
+			TextureCoordinates = atlasBounds,
+			Flags = flags
+		};
+
+		PanelRenderer.AddRectangle( bounds, info );
 	}
 
-	public static void DrawRectUnfilled( Rectangle bounds, Vector4 color, float thickness = 1.0f )
-	{
-		return;
-		PanelRenderer.AddRectangle( bounds, new Rectangle( 0, 0, 0, 0 ), thickness, color, color, color, color, GraphicsFlags.Border );
-	}
-
-	internal static void DrawAtlas( Vector2 position )
-	{
-		const float size = 256;
-		float aspect = PanelRenderer.AtlasBuilder.Texture.Width / (float)PanelRenderer.AtlasBuilder.Texture.Height;
-		var bounds = new Rectangle( position, new( size * aspect, size ) );
-		PanelRenderer.AddRectangle( bounds, new Rectangle( 0, 0, 1, 1 ), 0f, Vector4.One, Vector4.One, Vector4.One, Vector4.One, GraphicsFlags.UseRawImage );
-	}
-
-	internal static void DrawTexture( Rectangle bounds, Texture texture )
+	public static void DrawTexture( Rectangle bounds, Texture texture )
 	{
 		var texturePos = PanelRenderer.AtlasBuilder.AddOrGetTexture( texture );
 		var textureSize = PanelRenderer.AtlasBuilder.Texture.Size;
@@ -128,6 +121,12 @@ public static partial class Graphics
 		// Convert to [0..1] normalized space
 		texBounds /= textureSize;
 
-		PanelRenderer.AddRectangle( bounds, texBounds, 0, Vector4.One, Vector4.One, Vector4.One, Vector4.One, GraphicsFlags.UseRawImage );
+		var info = new RectangleInfo()
+		{
+			Flags = RenderMode.UseRawImage,
+			TextureCoordinates = texBounds
+		};
+
+		PanelRenderer.AddRectangle( bounds, info );
 	}
 }

@@ -54,6 +54,11 @@ public struct Rectangle
 		return new Rectangle( r.X / p.X, r.Y / p.Y, r.Width / p.X, r.Height / p.Y );
 	}
 
+	public static Rectangle operator *( Rectangle r, Vector2 p )
+	{
+		return new Rectangle( r.X * p.X, r.Y * p.Y, r.Width * p.X, r.Height * p.Y );
+	}
+
 	public bool Contains( Vector2 v )
 	{
 		if ( v.X >= this.X && v.Y >= this.Y

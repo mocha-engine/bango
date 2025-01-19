@@ -1,7 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-namespace Mocha.Engine.Editor;
 
-public class Font
+namespace Mocha;
+
+partial class Font
 {
 	public class Atlas
 	{

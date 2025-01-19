@@ -17,8 +17,8 @@ public static partial class Input
 
 	public static MochaInputSnapshot Snapshot { get; private set; }
 
-	public static System.Numerics.Vector2 MouseDelta => Snapshot.MouseDelta;
-	public static System.Numerics.Vector2 MousePosition => Snapshot.MousePosition;
+	public static System.Numerics.Vector2 MouseDelta => Snapshot.MouseDelta / Screen.DpiScale;
+	public static System.Numerics.Vector2 MousePosition => Snapshot.MousePosition / Screen.DpiScale;
 
 	public static float Forward => Snapshot.Forward;
 	public static float Left => Snapshot.Left;
@@ -52,7 +52,7 @@ public static partial class Input
 		{
 			switch ( e.type )
 			{
-				case SDL_EventType.MouseMotion:
+                case SDL_EventType.MouseMotion:
 					SDL_MouseMotionEvent mme = Unsafe.Read<SDL_MouseMotionEvent>( &e );
 					Snapshot.MouseDelta = new( mme.xrel, mme.yrel );
 					Snapshot.MousePosition = new( mme.x, mme.y );

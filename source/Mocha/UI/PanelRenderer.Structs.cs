@@ -38,6 +38,7 @@ partial class PanelRenderer
 		public Vector2 PanelPos { get; set; }
 		public Vector2 PanelSize { get; set; }
 		public short Flags { get; set; }
+		public Vector4 Rounding { get; set; }
 
 		public static VertexElementDescription[] VertexElementDescriptions = new[]
 		{
@@ -47,6 +48,7 @@ partial class PanelRenderer
 			new VertexElementDescription( "panelPos", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float2 ),
 			new VertexElementDescription( "panelSize", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float2 ),
 			new VertexElementDescription( "flags", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Int1 ),
+			new VertexElementDescription( "rounding", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float4 ),
 		};
 	}
 }

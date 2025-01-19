@@ -10,7 +10,8 @@ public enum PanelInputFlags
 
 internal class Panel : Widget
 {
-	public Vector4 Color { get; set; } = new Vector4( 1, 1, 1, 1 );
+	public Color Color { get; set; } = Color.White;
+	public Vector4 Rounding { get; set; } = Vector4.Zero;
 
 	internal Panel( Vector2 size ) : base()
 	{
@@ -19,6 +20,6 @@ internal class Panel : Widget
 
 	internal override void Render()
 	{
-		Graphics.DrawRect( Bounds, Color );
+		Graphics.DrawRect( Bounds, Color, Rounding );
 	}
 }

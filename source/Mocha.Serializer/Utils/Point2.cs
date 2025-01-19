@@ -1,4 +1,5 @@
-﻿namespace Mocha.Common;
+﻿
+namespace Mocha.Common;
 
 public struct Point2
 {
@@ -39,5 +40,10 @@ public struct Point2
 	{
 		x = X;
 		y = Y;
+	}
+
+	public static explicit operator Point2( Vector2 v )
+	{
+		return new Point2( (int)v.X, (int)v.Y );
 	}
 }

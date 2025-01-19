@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using SharpDX.Direct3D11;
+using System.Runtime.InteropServices;
 using Veldrid.Sdl2;
 
 namespace Mocha.Renderer;
@@ -7,7 +8,15 @@ public class Window
 {
 	public static Window Current { get; set; }
 	public Sdl2Window SdlWindow { get; private set; }
-	public Point2 Size => new Point2( SdlWindow.Width, SdlWindow.Height );
+	public Point2 Size
+	{
+		get => new Point2( SdlWindow.Width, SdlWindow.Height );
+		set
+		{
+			SdlWindow.Width = value.X;
+			SdlWindow.Height = value.Y + 24;
+		}
+	}
 
 	public string Title
 	{
@@ -18,25 +27,9 @@ public class Window
 	{
 		Current ??= this;
 
-		var windowFlags = SDL_WindowFlags.OpenGL | SDL_WindowFlags.Resizable | SDL_WindowFlags.AllowHighDpi | SDL_WindowFlags.Shown;
+		var windowFlags = SDL_WindowFlags.OpenGL | SDL_WindowFlags.AllowHighDpi | SDL_WindowFlags.Shown | SDL_WindowFlags.Resizable;
 		SdlWindow = new Sdl2Window( "Mocha", 128, 128, 1280, 720, windowFlags, threadedProcessing: false );
-		SetDarkMode( true );
 
 		Screen.UpdateFrom( Size );
-	}
-
-	public void SetDarkMode( bool darkMode )
-	{
-		SetDarkModeTitlebar( darkMode );
-	}
-
-	[DllImport( "dwmapi.dll" )]
-	public static extern int DwmSetWindowAttribute( IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute );
-
-	private void SetDarkModeTitlebar( bool darkMode )
-	{
-		var value = darkMode ? 1 : 0;
-		const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
-		DwmSetWindowAttribute( SdlWindow.Handle, DWMWA_USE_IMMERSIVE_DARK_MODE, ref value, Marshal.SizeOf( typeof( int ) ) );
 	}
 }

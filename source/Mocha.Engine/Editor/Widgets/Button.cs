@@ -5,7 +5,7 @@ internal class Button : Widget
 	protected Label label;
 	public Action OnClick;
 	public Vector2 TextAnchor = new Vector2( 0.5f, 0.5f );
-	private Vector2 Padding => new Vector2( 20, 15 );
+	private Vector2 Padding => new Vector2( 32, 12 );
 
 	public string Text
 	{
@@ -15,53 +15,41 @@ internal class Button : Widget
 
 	public Button( string text, Action? onClick = null ) : base()
 	{
-		label = new( text );
+		label = new( text, 11 );
 		label.Parent = this;
 
 		if ( onClick != null )
 			OnClick += onClick;
 	}
 
-	bool mouseWasDown = false;
-
 	internal override void Render()
 	{
-		Vector4 colorA = ITheme.Current.ButtonBgA;
-		Vector4 colorB = ITheme.Current.ButtonBgB;
+		(Color strokeStart, Color strokeEnd) = ("#dcdee0", "#c7d2d9");
+		(Color fillStart, Color fillEnd) = ("#f6f8fa", "#dee9f1");
 
-		Vector4 border = ITheme.Current.Border;
+		Paint.Clear();
 
-		Graphics.DrawShadow( Bounds, 2f, ITheme.Current.ShadowOpacity );
-		Graphics.DrawRect( Bounds, border, RoundingFlags.All );
+		Paint.SetShadowSize( 4.0f );
+		Paint.SetShadowColor( new Color( 0, 0, 0, 8 ) );
+		Paint.SetShadowOffset( new Vector2( 0, 1 ) );
 
-		if ( InputFlags.HasFlag( PanelInputFlags.MouseDown ) )
+		if ( IsMouseDown )
 		{
-			mouseWasDown = true;
-			Graphics.DrawRect( Bounds.Shrink( 1f ), colorB, colorA, RoundingFlags.All );
+			// Swap
+			(fillStart, fillEnd) = (fillEnd, fillStart);
 		}
-		else
+		else if ( IsMouseOver )
 		{
-			var b = Bounds.Shrink( 1f );
-			Graphics.DrawRect( b, ITheme.Current.ButtonBgA * 1.25f, RoundingFlags.All );
-			float d = 1f;
-			b.Height -= d;
-			b.Y += d;
-
-			if ( InputFlags.HasFlag( PanelInputFlags.MouseOver ) )
-			{
-				Graphics.DrawRect( b, colorA * 0.75f, colorA * 0.75f, RoundingFlags.All );
-			}
-			else
-			{
-				Graphics.DrawRect( b, colorA, colorB, RoundingFlags.All );
-			}
-			if ( mouseWasDown )
-			{
-				OnClick?.Invoke();
-			}
-
-			mouseWasDown = false;
+			// Lighten
+			(fillStart, fillEnd) = (fillStart.Lighten( 0.1f ), fillEnd.Lighten( 0.1f ));
+			Paint.SetShadowSize( 6.0f );
 		}
+
+		Paint.SetStrokeWidth( 1.0f );
+		Paint.SetStrokeLinearGradient( strokeStart, strokeEnd );
+		Paint.SetFillLinearGradient( fillStart, fillEnd );
+
+		Paint.DrawRect( Bounds, new( 10 ) );
 
 		UpdateLabel();
 	}
@@ -71,8 +59,9 @@ internal class Button : Widget
 		var labelBounds = label.Bounds;
 		labelBounds.X = Bounds.X + ((Bounds.Width - (Padding.X * 2.0f) - label.MeasureText( label.Text, label.FontSize ).X) * TextAnchor.X);
 		labelBounds.X += Padding.X;
-		labelBounds.Y = Bounds.Y + (Padding.Y) - 8;
+		labelBounds.Y = Bounds.Y + (Padding.Y) - 7;
 		label.Bounds = labelBounds;
+		label.Color = "#303335";
 	}
 
 	internal override Vector2 GetDesiredSize()

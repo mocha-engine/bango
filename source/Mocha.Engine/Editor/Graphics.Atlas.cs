@@ -17,9 +17,9 @@ partial class Graphics
 		//
 		// White box
 		//
-		var whiteSpriteData = new byte[32 * 32 * 4];
+		var whiteSpriteData = new byte[1 * 1 * 4];
 		Array.Fill( whiteSpriteData, (byte)255 );
-		UITexture = Texture.Builder.FromData( whiteSpriteData, 32, 32 ).WithName( "internal:editor_white_box" ).Build();
+		UITexture = Texture.Builder.FromData( whiteSpriteData, 1, 1 ).WithName( "internal:editor_white_box" ).Build();
 
 		PanelRenderer.AtlasBuilder.AddOrGetTexture( UITexture );
 	}

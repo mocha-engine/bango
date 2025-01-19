@@ -14,6 +14,9 @@ internal class Widget
 
 	public PanelInputFlags InputFlags { get; set; }
 
+	public bool IsMouseOver => InputFlags.HasFlag( PanelInputFlags.MouseOver );
+	public bool IsMouseDown => InputFlags.HasFlag( PanelInputFlags.MouseDown );
+
 	public Rectangle RelativeBounds { get; private set; }
 	public Rectangle Bounds
 	{

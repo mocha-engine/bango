@@ -31,7 +31,7 @@ partial class PanelRenderer
 
 	private void UpdateVertexBuffer( UIVertex[] vertices )
 	{
-		var vertexStructSize = (uint)Marshal.SizeOf( typeof( Vertex ) );
+		var vertexStructSize = (uint)Marshal.SizeOf( typeof( UIVertex ) );
 		var targetSize = (uint)vertices.Length * vertexStructSize;
 
 		if ( vertexBuffer == null || vertexBuffer.SizeInBytes != targetSize )
