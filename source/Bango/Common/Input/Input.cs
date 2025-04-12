@@ -56,8 +56,13 @@ namespace Bango.Common
 
 		struct SDL_Point
 		{
-			public int x;
-			public int y;
+			public int x = 0;
+			public int y = 0;
+
+			public SDL_Point()
+			{
+				
+			}
 		}
 
 		private static SDL_HitTestResult HitTest( IntPtr window, IntPtr area, IntPtr data )

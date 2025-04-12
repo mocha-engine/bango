@@ -24,7 +24,7 @@ public static partial class Event
 	{
 		var attributes = obj.GetType().GetMethods()
 			.Where( m => m.GetCustomAttribute<EventAttribute>() != null )
-			.Select( m => new EventRef( m.GetCustomAttribute<EventAttribute>().EventName, m, obj ) );
+			.Select( m => new EventRef( m.GetCustomAttribute<EventAttribute>()!.EventName, m, obj ) );
 
 		events.AddRange( attributes );
 	}
@@ -35,7 +35,7 @@ public static partial class Event
 		{
 			var attributes = type.GetMethods()
 				.Where( m => m.GetCustomAttribute<EventAttribute>() != null && m.IsStatic )
-				.Select( m => new EventRef( m.GetCustomAttribute<EventAttribute>().EventName, m, null ) );
+				.Select( m => new EventRef( m.GetCustomAttribute<EventAttribute>()!.EventName, m, null! ) );
 		}
 	}
 

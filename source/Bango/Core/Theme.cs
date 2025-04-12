@@ -1,5 +1,6 @@
 ﻿namespace Bango;
 
+#pragma warning disable CA2211 // Non-constant fields should not be visible
 public static class Theme
 {
 	public static Color Default50 = "#fafafa";
@@ -18,3 +19,4 @@ public static class Theme
 
 	public static bool IsDark = false;
 }
+#pragma warning restore CA2211 // Non-constant fields should not be visible

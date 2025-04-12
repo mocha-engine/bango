@@ -2,22 +2,6 @@
 
 namespace Bango.Engine.Editor;
 
-[Flags]
-public enum RoundingFlags
-{
-	None = 0,
-	TopLeft = 1,
-	TopRight = 2,
-	BottomLeft = 4,
-	BottomRight = 8,
-
-	All = TopLeft | TopRight | BottomLeft | BottomRight,
-	Bottom = BottomLeft | BottomRight,
-	Top = TopLeft | TopRight,
-	Left = TopLeft | BottomLeft,
-	Right = TopRight | BottomRight
-}
-
 public static partial class Graphics
 {
 	internal static PanelRenderer PanelRenderer { get; set; }

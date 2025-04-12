@@ -1,4 +1,4 @@
-﻿using Veldrid;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Bango.Renderer;
 
@@ -43,6 +43,7 @@ public partial class TextureBuilder
 		}
 	}
 
+	[MemberNotNull( nameof( one ) )]
 	public static void CreateOneTexture()
 	{
 		{
@@ -59,7 +60,7 @@ public partial class TextureBuilder
 		}
 	}
 
-
+	[MemberNotNull( nameof( zero ) )]
 	public static void CreateZeroTexture()
 	{
 		{
@@ -76,6 +77,7 @@ public partial class TextureBuilder
 		}
 	}
 
+	[MemberNotNull( nameof( missingTexture ) )]
 	public static void CreateMissingTexture()
 	{
 		//

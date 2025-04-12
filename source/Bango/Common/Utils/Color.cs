@@ -64,7 +64,6 @@ public struct Color
 				break;
 			default:
 				return White;
-				break;
 		}
 
 		var colorValue = new Color();

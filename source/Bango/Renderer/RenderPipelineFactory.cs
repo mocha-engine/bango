@@ -4,10 +4,10 @@ namespace Bango.Renderer;
 
 public class PipelineFactory
 {
-	private VertexElementDescription[] vertexElementDescriptions;
+	private VertexElementDescription[]? vertexElementDescriptions;
 	private FaceCullMode faceCullMode = FaceCullMode.Back;
-	private Shader shader;
-	private Framebuffer framebuffer;
+	private Shader? shader;
+	private Framebuffer? framebuffer;
 	private List<ResourceLayoutElementDescription> objectResources = new();
 	private List<ResourceLayoutElementDescription> lightingResources = new();
 
@@ -54,6 +54,12 @@ public class PipelineFactory
 
 	public RenderPipeline Build()
 	{
+		if ( framebuffer == null )
+			throw new Exception( "Pipeline has no framebuffer" );
+
+		if ( shader == null )
+			throw new Exception( "Pipeline has no shader" );
+
 		var blendState = new BlendStateDescription()
 		{
 			AttachmentStates = new BlendAttachmentDescription[framebuffer.ColorTargets.Count],
