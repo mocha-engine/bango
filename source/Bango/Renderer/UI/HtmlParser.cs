@@ -1,5 +1,4 @@
 ﻿namespace Bango;
-
 class HtmlParser : BaseParser
 {
 	public HtmlParser( string input ) : base( input )

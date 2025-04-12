@@ -1,5 +1,4 @@
-﻿namespace Bango.Renderer.UI;
-
+﻿namespace Bango;
 public partial class PanelRenderer
 {
 	public AtlasBuilder AtlasBuilder { get; set; }
@@ -24,10 +23,10 @@ public partial class PanelRenderer
 		RectCount = 0;
 	}
 
-	public void AddRectangle( Common.Rectangle rect, RectangleInfo info )
+	public void AddRectangle( Rectangle rect, RectangleInfo info )
 	{
 		var colors = (info.FillMode ?? new FillMode()).GetColors();
-		var textureCoordinates = info.TextureCoordinates ?? new Common.Rectangle( 0, 0, 1, 1 );
+		var textureCoordinates = info.TextureCoordinates ?? new Rectangle( 0, 0, 1, 1 );
 		var flags = info.Flags;
 		var rounding = info.Rounding ?? new Vector4( 0, 0, 0, 0 );
 		var unitRange = info.UnitRange ?? new Vector2( 0.0f );

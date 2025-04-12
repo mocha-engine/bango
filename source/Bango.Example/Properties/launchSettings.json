@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Bango.Example": {
+      "commandName": "Project",
+      "workingDirectory": "$(SolutionDir).."
+    }
+  }
+}

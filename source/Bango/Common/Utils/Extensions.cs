@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 public static class ByteExtension
 {
 	public static bool GetBit( this byte self, int index )

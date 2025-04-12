@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 public static class EasingFunctions
 {
 	public static float Linear( float t ) => t;

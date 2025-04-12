@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 public class Time
 {
 	public static float Delta { get; internal set; }

@@ -1,5 +1,4 @@
-﻿namespace Bango.Renderer.UI;
-
+﻿namespace Bango;
 public record RectangleInfo(
 	Rectangle? TextureCoordinates = default,
 	FillMode? FillMode = default,

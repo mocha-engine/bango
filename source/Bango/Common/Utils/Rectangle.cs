@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 public struct Rectangle
 {
 	public float X { get; set; }

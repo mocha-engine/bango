@@ -1,5 +1,4 @@
 ﻿namespace Bango;
-
 class BaseParser
 {
 	protected int Position { get; set; }

@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 public struct InputSnapshot
 {
 	public System.Numerics.Vector2 MouseDelta { get; internal set; } = new System.Numerics.Vector2();

@@ -1,7 +1,6 @@
 ﻿using Veldrid;
 
-namespace Bango.Renderer.UI;
-
+namespace Bango;
 public class AtlasBuilder
 {
 	private List<(Point2 Position, Texture Texture)> TextureCache { get; } = new();

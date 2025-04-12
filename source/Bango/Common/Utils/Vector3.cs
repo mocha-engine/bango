@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 public struct Vector3 : IEquatable<Vector3>
 {
 	private System.Numerics.Vector3 internalVector;

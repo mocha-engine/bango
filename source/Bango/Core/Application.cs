@@ -1,35 +1,37 @@
-﻿namespace Bango.Engine;
-
-internal class Application
+﻿namespace Bango;
+public partial class Application
 {
-	private RendererInstance renderer;
-	private EditorInstance editor;
+	internal static Application Instance { get; private set; }
 
-	internal Application()
+	private float headerHeight = 0f;
+
+	protected Application( string appTitle = "Bango Window", float headerHeight = 0 )
+	{		
+		var bootstrap = new Bootstrap( this );
+
+		this.headerHeight = headerHeight;
+		SdlWindow.Current.Title = appTitle;
+
+		Event.Register( this );
+		Instance = this;
+
+		bootstrap.Run();
+	}
+
+	internal void Render( Veldrid.CommandList commandList )
 	{
-		if ( Veldrid.RenderDoc.Load( out var renderDoc ) )
-		{
-			renderDoc.OverlayEnabled = false;
-			Log.Trace( "Loaded RenderDoc" );
-		}
+		Graphics.PanelRenderer.NewFrame();
+		Graphics.DrawRect( new Rectangle( new Vector2( 0, 30 + headerHeight ), Screen.Size ), Theme.Default950, Vector4.Zero );
+		ImDraw.NewFrame();
+		ImDraw.TitleBar();
 
-		using ( _ = new Stopwatch( "Full init" ) )
-		{
-			using ( _ = new Stopwatch( "Renderer init" ) )
-			{
-				renderer = new();
-			}
+		OnRender();
 
-			using ( _ = new Stopwatch( "Editor init" ) )
-			{
-				editor = new();
-			}
-		}
+		Graphics.PanelRenderer.Draw( commandList );
+	}
 
-		// Must be called before everything else
-		renderer.PreUpdate += Input.Update;
-		renderer.RenderOverlays += editor.Render;
+	public virtual void OnRender()
+	{
 
-		renderer.Run();
 	}
 }

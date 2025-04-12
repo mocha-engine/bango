@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Bango.Common;
-
+namespace Bango;
 public static partial class Event
 {
 	struct EventRef

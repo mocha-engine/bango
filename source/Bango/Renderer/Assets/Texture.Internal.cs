@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Bango.Renderer;
-
+namespace Bango;
 /*
  * Generators for internal textures (missing texture etc.)
  */

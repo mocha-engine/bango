@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Bango.Common;
-
+namespace Bango;
 public class FileSystem
 {
 	public static FileSystem Game => new FileSystem( "content\\" );

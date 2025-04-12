@@ -1,5 +1,4 @@
 ﻿namespace Bango;
-
 public static class ImDraw
 {
 	private record CursorState

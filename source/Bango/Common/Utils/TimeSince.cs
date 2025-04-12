@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 public struct TimeSince : IEquatable<TimeSince>
 {
 	private float time;

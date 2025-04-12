@@ -1,5 +1,4 @@
-﻿namespace Bango.Renderer.UI;
-
+﻿namespace Bango;
 [Flags]
 public enum RenderMode
 {

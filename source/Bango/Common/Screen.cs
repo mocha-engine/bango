@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 public static class Screen
 {
 	public static Vector2 Size => RawSize / DpiScale;

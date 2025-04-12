@@ -1,8 +1,7 @@
 ﻿using SDL2;
 using System.Runtime.InteropServices;
 
-namespace Bango.Renderer;
-
+namespace Bango;
 public class SdlWindow
 {
 	public static SdlWindow Current { get; set; }
@@ -87,6 +86,7 @@ public class SdlWindow
 		SDL.SDL_SetWindowsMessageHook( Input.WindowsMessageHook, IntPtr.Zero );
 		SDL.SDL_SetHint( "SDL_BORDERLESS_RESIZABLE_STYLE", "1" );
 		SDL.SDL_SetWindowBordered( SdlHandle, SDL.SDL_bool.SDL_FALSE );
+		SDL.SDL_SetWindowMinimumSize( SdlHandle, 300, 30 );
 
 		WindowHandle = wmInfo.info.win.window;
 		InstanceHandle = wmInfo.info.win.hinstance;
@@ -153,6 +153,8 @@ public class SdlWindow
 	}
 
 	private const int DWMSBT_MAINWINDOW = 2;
+	private const int DWMSBT_TRANSIENTWINDOW = 3;
+	private const int DWMSBT_TABBEDWINDOW = 4;
 	private const int DWMWA_SYSTEMBACKDROP_TYPE = 38;
 
 	public static bool SetMica( IntPtr hwnd )

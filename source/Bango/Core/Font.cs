@@ -1,5 +1,4 @@
 ﻿namespace Bango;
-
 public sealed partial class Font
 {
 	private static Dictionary<string, Font> FontCache = new();

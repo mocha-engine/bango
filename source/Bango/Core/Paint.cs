@@ -1,6 +1,4 @@
-﻿using Bango.Renderer.UI;
-
-namespace Bango;
+﻿namespace Bango;
 
 public static class Paint
 {

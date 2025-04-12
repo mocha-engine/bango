@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 public struct BBox
 {
 	public Vector3 Mins { get; set; }

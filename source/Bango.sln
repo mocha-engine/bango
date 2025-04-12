@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bango", "Bango\Bango.csproj", "{86D9A27F-6F46-4F60-BD58-94DF366704EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bango.Example", "Bango.Example\Bango.Example.csproj", "{A79707AD-8940-4AF8-9427-41FFBFE7021F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,12 +23,17 @@ Global
 		{86D9A27F-6F46-4F60-BD58-94DF366704EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{86D9A27F-6F46-4F60-BD58-94DF366704EB}.Release|x64.ActiveCfg = Release|x64
 		{86D9A27F-6F46-4F60-BD58-94DF366704EB}.Release|x64.Build.0 = Release|x64
+		{A79707AD-8940-4AF8-9427-41FFBFE7021F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A79707AD-8940-4AF8-9427-41FFBFE7021F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A79707AD-8940-4AF8-9427-41FFBFE7021F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A79707AD-8940-4AF8-9427-41FFBFE7021F}.Debug|x64.Build.0 = Debug|Any CPU
+		{A79707AD-8940-4AF8-9427-41FFBFE7021F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A79707AD-8940-4AF8-9427-41FFBFE7021F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A79707AD-8940-4AF8-9427-41FFBFE7021F}.Release|x64.ActiveCfg = Release|Any CPU
+		{A79707AD-8940-4AF8-9427-41FFBFE7021F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{86D9A27F-6F46-4F60-BD58-94DF366704EB} = {2F5C4610-1254-4D33-A1A6-5B38197346EE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {501E447E-DCFC-42D2-AF68-88486D3529DD}

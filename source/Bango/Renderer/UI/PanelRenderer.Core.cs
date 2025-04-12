@@ -1,8 +1,7 @@
 ﻿using Veldrid;
 using System.Runtime.InteropServices;
 
-namespace Bango.Renderer.UI;
-partial class PanelRenderer
+namespace Bango;partial class PanelRenderer
 {
 	private ResourceSet objectResourceSet;
 	private uint indexCount;

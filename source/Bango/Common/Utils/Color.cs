@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 namespace Bango;
-
 public struct Color
 {
 	public Color( byte red, byte green, byte blue, byte alpha )

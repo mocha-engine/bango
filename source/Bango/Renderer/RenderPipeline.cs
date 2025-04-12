@@ -1,7 +1,6 @@
 ﻿using Veldrid;
 
-namespace Bango.Renderer;
-
+namespace Bango;
 public struct RenderPipeline
 {
 	public static PipelineFactory Factory => new();

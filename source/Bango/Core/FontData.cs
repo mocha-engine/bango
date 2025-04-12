@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace Bango;
-
 partial class Font
 {
 	public class Atlas

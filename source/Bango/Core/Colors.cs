@@ -1,5 +1,4 @@
-﻿namespace Bango.Engine.Editor;
-
+﻿namespace Bango;
 static class Colors
 {
 	public static Vector4 TransparentGray => MathX.GetColor( "#77ABB2BF" );

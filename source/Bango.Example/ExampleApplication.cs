@@ -1,24 +1,33 @@
-﻿namespace Bango.Engine.Editor;
+﻿using Bango;
 
-internal partial class EditorInstance
+namespace Example;
+
+public class ExampleApplication : Application
 {
-	internal static EditorInstance Instance { get; private set; }
-
-	internal EditorInstance()
+	public ExampleApplication() : base( appTitle: "Example Application", headerHeight: 90 )
 	{
-		Event.Register( this );
-		Instance = this;
 
-		Graphics.Init();
 	}
 
 	private bool isChecked = false;
-	internal void Render( Veldrid.CommandList commandList )
+
+	public override void OnRender()
 	{
-		Graphics.PanelRenderer.NewFrame();
-		// Graphics.DrawRect( new Rectangle( new Vector2( 0, 30 ), Screen.Size ), Theme.Default950, Vector4.Zero );
-		ImDraw.NewFrame();
-		ImDraw.TitleBar();
+		//
+		// Header
+		//
+		{
+			ImDraw.Text( "Header Test" );
+			ImDraw.Spacing();
+
+			ImDraw.Button( "Item 1" );
+			ImDraw.Inline();
+			ImDraw.Button( "Item 2" );
+			ImDraw.Inline();
+			ImDraw.Button( "Item 3" );
+		}
+
+		ImDraw.Separator();
 
 		//
 		// Labels
@@ -74,7 +83,5 @@ internal partial class EditorInstance
 
 			ImDraw.Checkbox( "Enabled", ref isChecked );
 		}
-
-		Graphics.PanelRenderer.Draw( commandList );
 	}
 }

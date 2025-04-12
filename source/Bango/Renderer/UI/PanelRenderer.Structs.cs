@@ -1,8 +1,7 @@
 ﻿using Veldrid;
 using System.Runtime.InteropServices;
 
-namespace Bango.Renderer.UI;
-partial class PanelRenderer
+namespace Bango;partial class PanelRenderer
 {
 	private UIVertex[] RectVertices => new UIVertex[] {
 		new UIVertex { Position = new ( 0, 0, 0 ), TexCoords = new( 0, 0 ), PanelPos = new( 0, 0 ) },

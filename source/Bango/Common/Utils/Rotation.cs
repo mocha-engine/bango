@@ -1,7 +1,6 @@
 ﻿using SharpDX.Direct3D11;
 
-namespace Bango.Common;
-
+namespace Bango;
 public partial struct Rotation : IEquatable<Rotation>
 {
 	private System.Numerics.Quaternion internalQuaternion;

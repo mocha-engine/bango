@@ -1,6 +1,4 @@
-﻿using Bango.Renderer.UI;
-
-namespace Bango.Engine.Editor;
+﻿namespace Bango;
 
 public static partial class Graphics
 {

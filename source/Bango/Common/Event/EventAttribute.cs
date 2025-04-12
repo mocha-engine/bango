@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 [AttributeUsage( AttributeTargets.Method, AllowMultiple = true )]
 public class EventAttribute : Attribute
 {

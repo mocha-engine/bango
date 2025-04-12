@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Bango.Common;
-
+namespace Bango;
 public class Logger
 {
 	public enum Level

@@ -1,5 +1,4 @@
 ﻿namespace Bango;
-
 public class FillMode
 {
 	internal FillMode() { }

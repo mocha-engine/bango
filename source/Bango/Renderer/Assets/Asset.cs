@@ -1,5 +1,4 @@
-﻿namespace Bango.Renderer;
-
+﻿namespace Bango;
 public class Asset
 {
 	public string Path { get; set; } = $"Asset {All.Count}";

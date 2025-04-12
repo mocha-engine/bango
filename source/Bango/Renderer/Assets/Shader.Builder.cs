@@ -2,8 +2,7 @@
 using Veldrid;
 using Veldrid.SPIRV;
 
-namespace Bango.Renderer;
-
+namespace Bango;
 public class ShaderBuilder
 {
 	private ShaderDescription VertexShaderDescription;

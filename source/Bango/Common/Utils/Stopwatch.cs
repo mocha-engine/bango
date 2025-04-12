@@ -1,5 +1,4 @@
-﻿namespace Bango.Common;
-
+﻿namespace Bango;
 public class Stopwatch : IDisposable
 {
 	private readonly DateTime start;

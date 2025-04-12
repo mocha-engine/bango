@@ -1,5 +1,4 @@
 ﻿namespace Bango;
-
 public class Node
 {
 	public List<Node> Children { get; protected set; }

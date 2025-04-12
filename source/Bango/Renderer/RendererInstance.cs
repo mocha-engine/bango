@@ -1,7 +1,6 @@
 ﻿using Veldrid;
 
-namespace Bango.Renderer;
-
+namespace Bango;
 public class RendererInstance
 {
 	public SdlWindow Window;

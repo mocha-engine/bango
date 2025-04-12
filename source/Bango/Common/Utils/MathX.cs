@@ -1,8 +1,7 @@
 ﻿using System.Drawing;
 using System.Numerics;
 
-namespace Bango.Common;
-
+namespace Bango;
 public static class MathX
 {
 	public static int CeilToInt( this float x ) => (int)Math.Ceiling( x );

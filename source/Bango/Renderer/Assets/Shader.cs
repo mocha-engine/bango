@@ -2,8 +2,7 @@
 using Veldrid;
 using Veldrid.SPIRV;
 
-namespace Bango.Renderer;
-
+namespace Bango;
 public class Shader : Asset
 {
 	public Veldrid.Shader[] ShaderProgram { get; private set; }

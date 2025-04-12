@@ -2,8 +2,7 @@
 using StbImageSharp;
 using System.Runtime.InteropServices;
 
-namespace Bango.Renderer;
-
+namespace Bango;
 public partial class TextureBuilder
 {
 	private string type = "texture_diffuse";

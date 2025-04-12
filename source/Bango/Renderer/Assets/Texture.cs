@@ -1,7 +1,6 @@
 ﻿using Veldrid;
 
-namespace Bango.Renderer;
-
+namespace Bango;
 public class Texture : Asset
 {
 	public int Width { get; set; }

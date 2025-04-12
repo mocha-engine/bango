@@ -1,6 +1,5 @@
 ﻿
-namespace Bango.Common;
-
+namespace Bango;
 public struct Point2
 {
 	public int X { get; set; }
