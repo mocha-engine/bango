@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
@@ -38,8 +38,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mocha.Serializer\Bango.Common.csproj" />
-        <ProjectReference Include="..\Mocha\Bango.Renderer.csproj" />
+        <PackageReference Include="AssimpNet" Version="4.1.0" />
+        <PackageReference Include="ppy.SDL2-CS" Version="1.0.741-alpha" />
+        <PackageReference Include="StbImageSharp" Version="2.27.8" />
+        <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
+        <PackageReference Include="Veldrid" Version="4.8.0" />
+        <PackageReference Include="Veldrid.RenderDoc" Version="1.0.1" />
+        <PackageReference Include="Veldrid.SPIRV" Version="1.0.14" />
+        <PackageReference Include="Veldrid.StartupUtilities" Version="4.8.0" />
     </ItemGroup>
 
 

@@ -18,8 +18,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Mocha.Engine\Bango.Core.csproj" />
-		<ProjectReference Include="..\Mocha.Serializer\Bango.Common.csproj" />
-		<ProjectReference Include="..\Mocha\Bango.Renderer.csproj" />
 	</ItemGroup>
 
 </Project>

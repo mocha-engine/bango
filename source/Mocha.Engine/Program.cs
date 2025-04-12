@@ -1,6 +1,4 @@
-﻿global using static Bango.Engine.Global;
-global using Matrix4x4 = System.Numerics.Matrix4x4;
-global using Vector4 = System.Numerics.Vector4;
+﻿global using static Bango.Global;
 
 namespace Bango.Engine;
 
@@ -11,6 +9,6 @@ public class Program
 {
 	public static void Main( string[] args )
 	{
-		var game = new Game();
+		var game = new Application();
 	}
 }
