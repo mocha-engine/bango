@@ -86,7 +86,7 @@ public class RendererInstance
 		var blitShader = shader.ShaderProgram;
 
 		var pipelineDescription = new GraphicsPipelineDescription(
-			BlendStateDescription.SingleAlphaBlend,
+			BlendStateDescription.SingleOverrideBlend,
 			DepthStencilStateDescription.Disabled,
 			RasterizerStateDescription.CullNone,
 			PrimitiveTopology.TriangleList,
@@ -139,7 +139,7 @@ public class RendererInstance
 		_commandList.SetViewport( 0, new Viewport( 0, 0, MultisampledFramebuffer.Width, MultisampledFramebuffer.Height, 0, 1 ) );
 		_commandList.SetFullViewports();
 		_commandList.SetFullScissorRects();
-		_commandList.ClearColorTarget( 0, RgbaFloat.Black );
+		_commandList.ClearColorTarget( 0, new RgbaFloat( 0f, 0f, 0f, 0f ) );
 
 		// Render UI to MSAA buffer
 		_commandList.PushDebugGroup( "UI Render" );
@@ -152,7 +152,7 @@ public class RendererInstance
 		// Blit to screen
 		_commandList.SetFramebuffer( Device.MainSwapchain.Framebuffer );
 		_commandList.SetViewport( 0, new Viewport( 0, 0, Device.MainSwapchain.Framebuffer.Width, Device.MainSwapchain.Framebuffer.Height, 0, 1 ) );
-		_commandList.ClearColorTarget( 0, RgbaFloat.Black );
+		_commandList.ClearColorTarget( 0, new RgbaFloat( 0f, 0f, 0f, 0f ) );
 
 		_commandList.SetPipeline( _blitPipeline );
 		_commandList.SetGraphicsResourceSet( 0, _blitResourceSet );

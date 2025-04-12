@@ -16,7 +16,7 @@ internal partial class EditorInstance
 	internal void Render( Veldrid.CommandList commandList )
 	{
 		Graphics.PanelRenderer.NewFrame();
-		Graphics.DrawRect( new Rectangle( 0, Screen.Size ), Theme.Default50, Vector4.Zero );
+		// Graphics.DrawRect( new Rectangle( new Vector2( 0, 30 ), Screen.Size ), Theme.Default950, Vector4.Zero );
 		ImDraw.NewFrame();
 		ImDraw.TitleBar();
 

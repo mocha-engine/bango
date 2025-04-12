@@ -93,7 +93,8 @@ public class SdlWindow
 
 		WinApi.ExtendFrame( WindowHandle, -1, 0, 0, 0 );
 		Input.SetHitTest( SdlHandle );
-		// SetImmersiveDarkMode( WindowHandle, Theme.IsDark );
+		SetMica( WindowHandle );
+		SetImmersiveDarkMode( WindowHandle, true );
 
 		Screen.UpdateFrom( Size );
 	}
@@ -146,6 +147,23 @@ public class SdlWindow
 
 		int attributeValue = enable ? 1 : 0;
 		int result = DwmSetWindowAttribute( hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref attributeValue, sizeof( int ) );
+
+		// A result of 0 indicates success.
+		return result == 0;
+	}
+
+	private const int DWMSBT_MAINWINDOW = 2;
+	private const int DWMWA_SYSTEMBACKDROP_TYPE = 38;
+
+	public static bool SetMica( IntPtr hwnd )
+	{
+		if ( hwnd == IntPtr.Zero )
+		{
+			throw new ArgumentException( "Invalid window handle.", nameof( hwnd ) );
+		}
+
+		int attributeValue = DWMSBT_MAINWINDOW;
+		int result = DwmSetWindowAttribute( hwnd, DWMWA_SYSTEMBACKDROP_TYPE, ref attributeValue, sizeof( int ) );
 
 		// A result of 0 indicates success.
 		return result == 0;

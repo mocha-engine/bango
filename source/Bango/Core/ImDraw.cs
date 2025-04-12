@@ -78,15 +78,13 @@ public static class ImDraw
 		var bounds = new Rectangle( new Vector2( 0, 0 ), new Vector2( Screen.Size.X, 30 ) );
 
 		Paint.Clear();
-		Paint.SetFillSolid( Theme.Default200 );
-		Paint.DrawRect( bounds );
 
 		var tex = Texture.Builder.FromPath( "core/logo.png" ).Build();
 		Graphics.DrawTexture( new Rectangle( 8, 8, 16, 16 ), tex );
 
 		Cursor.BumpPosition( new Vector2( 24, 0 ) );
 		SetFont( "segoeui", 12.0f );
-		Text( SdlWindow.Current.Title ); Inline();
+		Text( SdlWindow.Current.Title, Color.White ); Inline();
 		var titleWidth = Graphics.MeasureText( SdlWindow.Current.Title, Cursor.Font, Cursor.FontSize ).X;
 		Cursor.BumpPosition( new Vector2( Screen.Size.X - titleWidth - 175, 0 ) );
 
@@ -94,7 +92,7 @@ public static class ImDraw
 		{
 			var buttonBounds = new Rectangle( Cursor.Position, new Vector2( 45.0f, 30.0f ) );
 
-			Color foregroundColor = Color.Black;
+			Color foregroundColor = Color.White;
 			Color backgroundColor = Theme.Default50;
 
 			if ( buttonBounds.Contains( Input.MousePosition ) )
@@ -109,10 +107,10 @@ public static class ImDraw
 				}
 				else
 				{
-					backgroundColor = Theme.Default100;
+					backgroundColor = Theme.Default800;
 
 					if ( Input.MouseLeftDown )
-						backgroundColor = Theme.Default50;
+						backgroundColor = Theme.Default700;
 				}
 
 				if ( Input.MouseLeftPressed )
@@ -203,7 +201,7 @@ public static class ImDraw
 					glyphPos,
 					font.FontTexture,
 					glyphRect,
-					color ?? Theme.Default950
+					color ?? Theme.Default50
 				);
 			}
 
@@ -307,11 +305,11 @@ public static class ImDraw
 
 	public static bool ButtonDisabled( string text )
 	{
-		(Color strokeStart, Color strokeEnd) = (Theme.Default300, Theme.Default300);
-		(Color fillStart, Color fillEnd) = (Theme.Default50, Theme.Default50);
+		(Color strokeStart, Color strokeEnd) = (Theme.Default800, Theme.Default800);
+		(Color fillStart, Color fillEnd) = (Theme.Default900, Theme.Default900);
 		(Color mouseDownFillStart, Color mouseDownFillEnd) = (Theme.Default50, Theme.Default50);
 
-		ButtonInternal( text, strokeStart, strokeEnd, fillStart, fillEnd, mouseDownFillStart, mouseDownFillEnd, Theme.Default400 );
+		ButtonInternal( text, strokeStart, strokeEnd, fillStart, fillEnd, mouseDownFillStart, mouseDownFillEnd, Theme.Default600 );
 		return false;
 	}
 
@@ -369,7 +367,7 @@ public static class ImDraw
 		Cursor.PushPosition();
 
 		Cursor.BumpPosition( new Vector2( 22, 0 ) );
-		Text( text, Theme.Default950 );
+		Text( text );
 
 		Cursor.PopPosition();
 
@@ -392,7 +390,7 @@ public static class ImDraw
 		Cursor.BumpPosition( new Vector2( 0, 16.0f ) );
 
 		Paint.Clear();
-		Paint.SetFillSolid( Theme.Default200 );
+		Paint.SetFillSolid( Theme.Default50.WithAlpha( 0.005f ) );
 		Paint.DrawRect( new Rectangle( Cursor.Position, new Vector2( Screen.Size.X - (Cursor.Padding.X * 2.0f), 2.0f ) ) );
 
 		Cursor.Advance( bounds );

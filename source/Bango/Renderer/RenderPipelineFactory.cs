@@ -63,7 +63,7 @@ public class PipelineFactory
 		var blendState = new BlendStateDescription()
 		{
 			AttachmentStates = new BlendAttachmentDescription[framebuffer.ColorTargets.Count],
-			BlendFactor = RgbaFloat.Black
+			BlendFactor = new RgbaFloat( 0, 0, 0, 0 )
 		};
 
 		for ( int i = 0; i < framebuffer.ColorTargets.Count; i++ )
