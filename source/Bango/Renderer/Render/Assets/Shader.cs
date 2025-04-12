@@ -4,7 +4,6 @@ using Veldrid.SPIRV;
 
 namespace Bango.Renderer;
 
-[Icon( FontAwesome.Glasses ), Title( "Shader" )]
 public class Shader : Asset
 {
 	public Veldrid.Shader[] ShaderProgram { get; private set; }
@@ -85,12 +84,11 @@ public class Shader : Asset
 
 			ShaderProgram = Device.ResourceFactory.CreateFromSpirv( vertexShaderDescription, fragmentShaderDescription );
 
-			Notify.AddNotification( $"Shader Compilation Success!", $"Compiled shader {Path}", FontAwesome.FaceGrinStars );
+			Log.Info( $"Compiled shader '{Path}' successfully." );
 		}
 		catch ( Exception ex )
 		{
-			Log.Warning( $"Compile failed:\n{ex.Message}" );
-			Notify.AddNotification( $"Shader Compilation Fail", $"{ex.Message}", FontAwesome.FaceSadCry );
+			Log.Error( $"Failed to compile shader '{Path}': {ex.Message}" );
 		}
 
 		IsDirty = false;

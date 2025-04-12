@@ -1,6 +1,5 @@
 ﻿namespace Bango.Renderer.UI;
 
-[Icon( FontAwesome.Square ), Title( "UI" )]
 public partial class PanelRenderer
 {
 	public AtlasBuilder AtlasBuilder { get; set; }
