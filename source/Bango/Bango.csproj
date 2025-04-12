@@ -10,6 +10,9 @@
         <DebugSymbols>true</DebugSymbols>
         <Platforms>AnyCPU;x64</Platforms>
         <ApplicationManifest>app.manifest</ApplicationManifest>
+        <BaseOutputPath>$(SolutionDir)..\build</BaseOutputPath>
+        <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+        <PublishAot>False</PublishAot>
 
     </PropertyGroup>
 
