@@ -5,5 +5,6 @@ public record RectangleInfo(
 	FillMode? FillMode = default,
 	RenderMode Flags = RenderMode.None,
 	float ScreenPxRange = 0f,
-	Vector4? Rounding = default
+	Vector4? Rounding = default,
+	Vector2? UnitRange = default
 );

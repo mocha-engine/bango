@@ -1,10 +1,8 @@
 ﻿using System.Globalization;
 namespace Bango;
 
-public class Color
+public struct Color
 {
-	public Color() { }
-
 	public Color( byte red, byte green, byte blue, byte alpha )
 	{
 		Red = red;
@@ -13,9 +11,9 @@ public class Color
 		Alpha = alpha;
 	}
 
-	public static Color White => new Color( 255, 255, 255, 255 );
-	public static Color Black => new Color( 0, 0, 0, 255 );
-	public static Color Transparent => new Color( 255, 255, 255, 0 );
+	public static readonly Color White = new Color( 255, 255, 255, 255 );
+	public static readonly Color Black = new Color( 0, 0, 0, 255 );
+	public static readonly Color Transparent = new Color( 255, 255, 255, 0 );
 
 	public byte Red { get; set; }
 	public byte Green { get; set; }
@@ -121,6 +119,16 @@ public class Color
 			(byte)Math.Max( 0, Green - (255 * amount) ),
 			(byte)Math.Max( 0, Blue - (255 * amount) ),
 			Alpha
+		);
+	}
+
+	public Color WithAlpha( float alpha )
+	{
+		return new Color(
+			Red,
+			Green,
+			Blue,
+			(byte)Math.Max( 0, (255 / alpha) )
 		);
 	}
 }

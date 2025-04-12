@@ -48,17 +48,32 @@ partial class PanelRenderer
 
 	private void CreateResources()
 	{
-		Log.Info( $"Updating PanelRenderer object resource set" );
+		pipeline = RenderPipeline.Factory
+			.AddObjectResource( "g_tAtlas", ResourceKind.TextureReadOnly, ShaderStages.Fragment )
+			.AddObjectResource( "g_sSampler", ResourceKind.Sampler, ShaderStages.Fragment )
+			.AddObjectResource( "g_vScreenSize", ResourceKind.UniformBuffer, ShaderStages.Vertex | ShaderStages.Fragment )
+			.WithVertexElementDescriptions( UIVertex.VertexElementDescriptions )
+			.WithFramebuffer( RendererInstance.Current.MultisampledFramebuffer )
+			.WithShader( shader )
+			.Build();
 
-		Log.Info( $"New atlas has size {AtlasBuilder.Texture.Size}" );
+		var ub = Device.ResourceFactory.CreateBuffer( new BufferDescription( 16, BufferUsage.UniformBuffer ) );
+		Device.UpdateBuffer( ub, 0, new float[] { Screen.Size.X, Screen.Size.Y } );
 
 		var objectResourceSetDescription = new ResourceSetDescription(
 			pipeline.ResourceLayouts[0],
 			AtlasBuilder.Texture.VeldridTexture,
-			Device.Aniso4xSampler
+			Device.Aniso4xSampler,
+			ub
 		);
 
 		objectResourceSet = Device.ResourceFactory.CreateResourceSet( objectResourceSetDescription );
+	}
+
+	[Event.Window.Resized]
+	public void OnWindowResized( Point2 newSize )
+	{
+		CreateResources();
 	}
 
 	private void UpdateBuffers()

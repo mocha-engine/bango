@@ -1,12 +1,8 @@
-﻿using Veldrid;
-using Veldrid.Sdl2;
-using Veldrid.StartupUtilities;
-
-namespace Bango.Renderer;
+﻿namespace Bango.Renderer;
 
 public class RendererInstance
 {
-	public Window Window;
+	public SdlWindow Window;
 
 	private DateTime _lastFrame;
 
@@ -25,27 +21,20 @@ public class RendererInstance
 		Current = this;
 		Event.Register( this );
 
-		Init();
-		_lastFrame = DateTime.Now;
-	}
-
-	private void Init()
-	{
 		Window = new();
 
 		CreateGraphicsDevice();
-		// Swap the buffers so that the screen isn't a mangled mess
-		Device.SwapBuffers();
 		CreateMultisampledFramebuffer();
 
 		_commandList = Device.ResourceFactory.CreateCommandList();
+		_lastFrame = DateTime.Now;
 	}
 
 	private void CreateMultisampledFramebuffer()
 	{
 		var colorTextureInfo = TextureDescription.Texture2D(
-			(uint)(Screen.RawSize.X),
-			(uint)(Screen.RawSize.Y),
+			(uint)(Screen.RawSize.X * Screen.RenderScale),
+			(uint)(Screen.RawSize.Y * Screen.RenderScale),
 			1,
 			1,
 			PixelFormat.B8_G8_R8_A8_UNorm,
@@ -117,12 +106,17 @@ public class RendererInstance
 
 		OnWindowResized( Window.Size );
 
-		while ( Window.SdlWindow.Exists )
+		while ( Window.Active )
 		{
-			Update();
-			PreRender();
-			PostRender();
+			Render();
 		}
+	}
+
+	public void Render()
+	{
+		Update();
+		PreRender();
+		PostRender();
 	}
 
 	private void PreRender()
@@ -156,6 +150,7 @@ public class RendererInstance
 		// Blit to screen
 		_commandList.SetFramebuffer( Device.MainSwapchain.Framebuffer );
 		_commandList.SetViewport( 0, new Viewport( 0, 0, Device.MainSwapchain.Framebuffer.Width, Device.MainSwapchain.Framebuffer.Height, 0, 1 ) );
+		_commandList.ClearColorTarget( 0, RgbaFloat.Black );
 
 		_commandList.SetPipeline( _blitPipeline );
 		_commandList.SetGraphicsResourceSet( 0, _blitResourceSet );
@@ -165,6 +160,9 @@ public class RendererInstance
 
 		Device.SubmitCommands( _commandList );
 		Device.SwapBuffers();
+
+		if ( !Window.Visible )
+			Window.Visible = true;
 	}
 
 	private void Update()
@@ -191,8 +189,9 @@ public class RendererInstance
 			HasMainSwapchain = true
 		};
 
-		var swapchainSource = VeldridStartup.GetSwapchainSource( Window.SdlWindow );
-		Device = GraphicsDevice.CreateD3D11( swapchainDescription: new SwapchainDescription( swapchainSource, (uint)(Window.Size.X), (uint)(Window.Size.Y), options.SwapchainDepthFormat, options.SyncToVerticalBlank, options.SwapchainSrgbFormat ), options: options );
+		var swapchainSource = SwapchainSource.CreateWin32( Window.WindowHandle, Window.InstanceHandle );
+		var swapchainDescription = new SwapchainDescription( swapchainSource, (uint)(Window.Size.X), (uint)(Window.Size.Y), options.SwapchainDepthFormat, options.SyncToVerticalBlank, options.SwapchainSrgbFormat );
+		Device = GraphicsDevice.CreateD3D11( swapchainDescription: swapchainDescription, options: options );
 	}
 
 	[Event.Window.Resized]

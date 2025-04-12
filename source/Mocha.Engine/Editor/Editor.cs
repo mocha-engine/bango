@@ -17,8 +17,6 @@ internal partial class EditorInstance
 
 	public virtual void CreateUI()
 	{
-		using var _ = new Stopwatch( "CreateUI" );
-
 		foreach ( var item in Widget.All.ToArray() )
 		{
 			item.Delete();
@@ -27,7 +25,7 @@ internal partial class EditorInstance
 		//
 		// Everything has to go inside a layout otherwise they'll go in funky places
 		//
-		RootLayout = new HorizontalLayout
+		RootLayout = new VerticalLayout
 		{
 			Size = new Vector2( -1, -1 )
 		};
@@ -36,15 +34,74 @@ internal partial class EditorInstance
 		RootLayout.Margin = new( 16, 16 );
 
 		RootLayout.Add( new Button( "OK" ), false );
-		RootLayout.Add( new Button( "I am a really long button with some really long text inside it" ), false );
+		RootLayout.Add( new Button( "I am a long button! Hello!" ), false );
 	}
 
+	private string testString = "";
+	private bool isChecked = false;
 	internal void Render( Veldrid.CommandList commandList )
 	{
 		Graphics.PanelRenderer.NewFrame();
-		Graphics.DrawRect( new Rectangle( 0, (Vector2)Screen.Size ), Vector4.One, Vector4.Zero );
+		Graphics.DrawRect( new Rectangle( 0, (Vector2)Screen.Size ), Theme.Default50, Vector4.Zero );
+		ImDraw.NewFrame();
+		ImDraw.TitleBar();
 
 		RenderWidgets();
+
+		//
+		// Labels
+		//
+		{
+			ImDraw.Text( "Labels" );
+			ImDraw.Spacing();
+
+			ImDraw.SetFontDefault( 32.0f );
+			ImDraw.Text( "Extra Large" );
+			ImDraw.Inline();
+
+			ImDraw.SetFontDefault( 24.0f );
+			ImDraw.Text( "Large" );
+			ImDraw.Inline();
+
+			ImDraw.SetFontDefault( 16.0f );
+			ImDraw.Text( "Medium" );
+			ImDraw.Inline();
+
+			ImDraw.SetFontDefault();
+			ImDraw.Text( "Small" );
+
+			ImDraw.Spacing( 16.0f );
+		}
+
+		ImDraw.Separator();
+
+		//
+		// Buttons
+		//
+		{
+			ImDraw.Text( "Buttons" );
+			ImDraw.Spacing();
+
+			ImDraw.Button( "Default" );
+			ImDraw.Inline();
+			ImDraw.ButtonLight( "Light" );
+			ImDraw.Inline();
+			ImDraw.ButtonDelete( "Danger" );
+			ImDraw.Inline();
+			ImDraw.ButtonDisabled( "Disabled" );
+		}
+
+		ImDraw.Separator();
+
+		//
+		// Checkbox
+		//
+		{
+			ImDraw.Text( "Checkboxes" );
+			ImDraw.Spacing();
+
+			ImDraw.Checkbox( "Enabled", ref isChecked );
+		}
 
 		Graphics.PanelRenderer.Draw( commandList );
 	}
@@ -64,7 +121,7 @@ internal partial class EditorInstance
 			var focusedWidget = mouseOverWidgets.Last();
 			focusedWidget.InputFlags |= PanelInputFlags.MouseOver;
 
-			if ( Input.MouseLeft )
+			if ( Input.MouseLeftPressed )
 			{
 				focusedWidget.InputFlags |= PanelInputFlags.MouseDown;
 			}

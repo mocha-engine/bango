@@ -1,6 +1,4 @@
-﻿using Bango.Common;
-using Bango.Renderer.UI;
-using System.Drawing.Imaging;
+﻿using Bango.Renderer.UI;
 
 namespace Bango.Engine.Editor;
 
@@ -101,11 +99,15 @@ public static partial class Graphics
 		// Flip y axis
 		atlasBounds.Y = 1.0f - atlasBounds.Y;
 
+		// Find unit range
+		var unitRange = new Vector2( 6.0f ) / texture.Size;
+
 		var info = new RectangleInfo()
 		{
 			FillMode = FillMode.Solid( color ),
 			TextureCoordinates = atlasBounds,
-			Flags = flags
+			Flags = flags,
+			UnitRange = unitRange
 		};
 
 		PanelRenderer.AddRectangle( bounds, info );
@@ -128,5 +130,20 @@ public static partial class Graphics
 		};
 
 		PanelRenderer.AddRectangle( bounds, info );
+	}
+
+	public static Vector2 MeasureText( string text, Font font, float fontSize )
+	{
+		float x = 0;
+
+		foreach ( var c in text )
+		{
+			var glyph = font.FontData.Glyphs.First( x => x.Unicode == (int)c );
+
+			x += glyph.Advance * fontSize;
+		}
+
+		// ????
+		return new Vector2( x, fontSize * 1.25f );
 	}
 }

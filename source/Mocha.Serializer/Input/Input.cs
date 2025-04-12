@@ -1,235 +1,281 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text;
-using Veldrid.Sdl2;
+﻿using SDL2;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
-namespace Bango.Common;
-
-// TODO: Decouple from SDL
-public static partial class Input
+namespace Bango.Common
 {
-	public enum MouseModes
+	public static partial class Input
 	{
-		Locked,
-		Unlocked
-	}
+		private static InputSnapshot PreviousSnapshot;
+		private static InputSnapshot Snapshot;
 
-	public static MouseModes MouseMode { get; set; } = MouseModes.Unlocked;
+		public static Vector2 MouseDelta => Snapshot.MouseDelta / Screen.DpiScale;
+		public static Vector2 MousePosition => Snapshot.MousePosition / Screen.DpiScale;
 
-	public static BangoInputSnapshot Snapshot { get; private set; }
+		public static bool MouseLeftPressed => Snapshot.MouseLeft && !PreviousSnapshot.MouseLeft;
+		public static bool MouseLeftDown => Snapshot.MouseLeft;
+		public static bool MouseRightPressed => Snapshot.MouseRight && !PreviousSnapshot.MouseRight;
+		public static bool MouseRightDown => Snapshot.MouseRight;
 
-	public static System.Numerics.Vector2 MouseDelta => Snapshot.MouseDelta / Screen.DpiScale;
-	public static System.Numerics.Vector2 MousePosition => Snapshot.MousePosition / Screen.DpiScale;
-
-	public static float Forward => Snapshot.Forward;
-	public static float Left => Snapshot.Left;
-	public static float Up => Snapshot.Up;
-
-	public static bool MouseLeft => Snapshot.MouseLeft;
-	public static bool MouseRight => Snapshot.MouseRight;
-
-	public static unsafe void Update()
-	{
-		if ( Sdl2Native.SDL_SetRelativeMouseMode( MouseMode == MouseModes.Locked ) != 0 )
-			throw new Exception();
-
-		var lastKeysDown = Snapshot?.KeysDown.ToList() ?? new();
-		var lastKeyEvents = Snapshot?.KeyEvents.ToList() ?? new();
-		var lastMouseEvents = Snapshot?.MouseEvents.ToList() ?? new();
-		Snapshot ??= new();
-		Snapshot.KeysDown = lastKeysDown.ToList();
-		Snapshot.LastKeysDown = lastKeysDown;
-		Snapshot.MouseDelta = Vector2.Zero;
-		Snapshot.WheelDelta = 0;
-
-		Sdl2Native.SDL_PumpEvents();
-
-		List<Veldrid.KeyEvent> veldridKeyEvents = new( lastKeyEvents );
-		List<Veldrid.MouseEvent> veldridMouseEvents = new( lastMouseEvents );
-		List<char> keyCharPresses = new();
-
-		SDL_Event e;
-		while ( Sdl2Native.SDL_PollEvent( &e ) != 0 )
+		private enum SDL_HitTestResult
 		{
-			switch ( e.type )
+			Normal = 0,
+			Draggable = 1,
+			ResizeTopLeft,
+			ResizeTop,
+			ResizeTopRight,
+			ResizeRight,
+			ResizeBottomRight,
+			ResizeBottom,
+			ResizeBottomLeft,
+			ResizeLeft
+		}
+
+		private delegate SDL_HitTestResult SDL_HitTestCallback( IntPtr window, IntPtr area, IntPtr data );
+
+		private static SDL_HitTestCallback hitTestCallback = new SDL_HitTestCallback( HitTest );
+
+		public static void SetHitTest( IntPtr sdlWindow )
+		{
+			if ( SDL_SetWindowHitTest( sdlWindow, hitTestCallback, IntPtr.Zero ) != 0 )
 			{
-                case SDL_EventType.MouseMotion:
-					SDL_MouseMotionEvent mme = Unsafe.Read<SDL_MouseMotionEvent>( &e );
-					Snapshot.MouseDelta = new( mme.xrel, mme.yrel );
-					Snapshot.MousePosition = new( mme.x, mme.y );
-
-					break;
-				case SDL_EventType.MouseButtonDown:
-				case SDL_EventType.MouseButtonUp:
-					SDL_MouseButtonEvent mbe = Unsafe.Read<SDL_MouseButtonEvent>( &e );
-					bool isButtonDown = (mbe.type == SDL_EventType.MouseButtonDown);
-					var veldridButton = Veldrid.MouseButton.Left;
-
-					switch ( mbe.button )
-					{
-						case SDL_MouseButton.Left:
-							veldridButton = Veldrid.MouseButton.Left;
-							Snapshot.MouseLeft = isButtonDown;
-							break;
-						case SDL_MouseButton.Right:
-							veldridButton = Veldrid.MouseButton.Right;
-							Snapshot.MouseRight = isButtonDown;
-							break;
-						default:
-							break;
-					}
-
-					var mbeVeldrid = new Veldrid.MouseEvent( veldridButton, isButtonDown );
-
-					veldridMouseEvents.RemoveAll( x => x.MouseButton == veldridButton );
-					veldridMouseEvents.Add( mbeVeldrid );
-					break;
-				case SDL_EventType.MouseWheel:
-					SDL_MouseWheelEvent mwe = Unsafe.Read<SDL_MouseWheelEvent>( &e );
-					Snapshot.WheelDelta = mwe.y;
-
-					break;
-				case SDL_EventType.KeyDown:
-				case SDL_EventType.KeyUp:
-					SDL_KeyboardEvent kbe = Unsafe.Read<SDL_KeyboardEvent>( &e );
-					bool isKeyDown = (kbe.type == SDL_EventType.KeyDown);
-
-					if ( isKeyDown )
-					{
-						if ( !Snapshot.KeysDown.Any( x => x.sym == kbe.keysym.sym ) )
-							Snapshot.KeysDown.Add( kbe.keysym );
-					}
-					else
-					{
-						Snapshot.KeysDown.RemoveAll( x => x.sym == kbe.keysym.sym );
-					}
-
-					var veldridModifiers = Veldrid.ModifierKeys.None;
-					var veldridKey = MapKey( kbe.keysym );
-					var kbeVeldrid = new Veldrid.KeyEvent( veldridKey, isKeyDown, veldridModifiers );
-
-					veldridKeyEvents.Add( kbeVeldrid );
-
-					break;
-
-				case SDL_EventType.TextInput:
-					SDL_TextInputEvent tie = Unsafe.Read<SDL_TextInputEvent>( &e );
-
-					uint byteCount = 0;
-					// Loop until the null terminator is found or the max size is reached.
-					while ( byteCount < SDL_TextInputEvent.MaxTextSize && tie.text[byteCount++] != 0 )
-					{ }
-
-					if ( byteCount > 1 )
-					{
-						// We don't want the null terminator.
-						byteCount -= 1;
-						int charCount = Encoding.UTF8.GetCharCount( tie.text, (int)byteCount );
-						char* charsPtr = stackalloc char[charCount];
-						Encoding.UTF8.GetChars( tie.text, (int)byteCount, charsPtr, charCount );
-						for ( int i = 0; i < charCount; i++ )
-						{
-							keyCharPresses.Add( charsPtr[i] );
-						}
-					}
-
-					break;
-
-				case SDL_EventType.WindowEvent:
-					SDL_WindowEvent we = Unsafe.Read<SDL_WindowEvent>( &e );
-					switch ( we.@event )
-					{
-						case SDL_WindowEventID.Resized:
-						case SDL_WindowEventID.SizeChanged:
-							var newSize = new Point2( we.data1, we.data2 );
-							Screen.UpdateFrom( newSize );
-							Event.Run( Event.Window.ResizedAttribute.Name, newSize );
-							break;
-
-						case SDL_WindowEventID.Close:
-							// TODO: Unload & destroy everything nicely
-							Environment.Exit( 0 );
-							break;
-
-						default:
-							break;
-					}
-
-					break;
+				Console.WriteLine( "SDL_SetWindowHitTest failed: " + PtrToStringAnsi( SDL_GetError() ) );
 			}
 		}
 
-		Snapshot.Forward = 0;
-		Snapshot.Left = 0;
-		Snapshot.Up = 0;
+		[DllImport( "SDL2", CallingConvention = CallingConvention.Cdecl )]
+		private static extern int SDL_SetWindowHitTest( IntPtr window, SDL_HitTestCallback callback, IntPtr callbackData );
 
-		if ( IsKeyPressed( SDL_Keycode.SDLK_a ) )
-			Snapshot.Left -= 1;
-		if ( IsKeyPressed( SDL_Keycode.SDLK_d ) )
-			Snapshot.Left += 1;
-		if ( IsKeyPressed( SDL_Keycode.SDLK_w ) )
-			Snapshot.Forward += 1;
-		if ( IsKeyPressed( SDL_Keycode.SDLK_s ) )
-			Snapshot.Forward -= 1;
+		[DllImport( "SDL2", CallingConvention = CallingConvention.Cdecl )]
+		private static extern IntPtr SDL_GetError();
 
-		Snapshot.KeyEvents = veldridKeyEvents;
-		Snapshot.MouseEvents = veldridMouseEvents;
-		Snapshot.KeyCharPresses = keyCharPresses;
-
-		if ( MouseMode == MouseModes.Unlocked )
+		private static string PtrToStringAnsi( IntPtr ptr )
 		{
-			//Snapshot.Forward = 0;
-			//Snapshot.Left = 0;
-			//Snapshot.Up = 0;
-
-			//Snapshot.MouseDelta = Vector2.Zero;
-			//Snapshot.MouseLeft = false;
-			//Snapshot.MouseRight = false;
+			return Marshal.PtrToStringAnsi( ptr );
 		}
-	}
 
-	private static bool IsKeyPressed( SDL_Keycode k ) => Snapshot.KeysDown.Select( x => x.sym ).Contains( k );
-	private static bool IsKeyPressed( InputButton b ) => IsKeyPressed( ButtonToKeycode( b ) );
+		struct SDL_Point
+		{
+			public int x;
+			public int y;
+		}
 
-	private static bool WasKeyPressed( SDL_Keycode k ) => Snapshot.LastKeysDown.Select( x => x.sym ).Contains( k );
-	private static bool WasKeyPressed( InputButton b ) => WasKeyPressed( ButtonToKeycode( b ) );
+		private static SDL_HitTestResult HitTest( IntPtr window, IntPtr area, IntPtr data )
+		{
+			var point = Marshal.PtrToStructure<SDL_Point>( area );
 
-	/*
-	 * TODO: Can we use attributes here? e.g.
-	 * 
-	 * public enum InputButton
-	 * {
-	 *     [SDLKey(SDL_Keycode.SDLK_F1]
-	 *     ConsoleToggle,
-	 *     //...
-	 * }
-	 */
-	public static SDL_Keycode ButtonToKeycode( InputButton button ) => button switch
-	{
-		InputButton.ConsoleToggle => SDL_Keycode.SDLK_F1,
-		InputButton.RotateLeft => SDL_Keycode.SDLK_LEFT,
-		InputButton.RotateRight => SDL_Keycode.SDLK_RIGHT,
-		InputButton.Jump => SDL_Keycode.SDLK_SPACE,
-		InputButton.Sprint => SDL_Keycode.SDLK_LSHIFT,
-		InputButton.QuickSwitcher => SDL_Keycode.SDLK_F2,
-		InputButton.SwitchMode => SDL_Keycode.SDLK_F3,
+			int width = (int)Screen.Size.X;
+			int height = (int)Screen.Size.Y;
+			int borderSize = 8;
 
-		_ => SDL_Keycode.SDLK_UNKNOWN
-	};
+			if ( point.y < borderSize )
+			{
+				if ( point.x < borderSize )
+				{
+					return SDL_HitTestResult.ResizeTopLeft;
+				}
+				else if ( point.x > width - borderSize )
+				{
+					return SDL_HitTestResult.ResizeTopRight;
+				}
+				else
+				{
+					return SDL_HitTestResult.ResizeTop;
+				}
+			}
+			else if ( point.y > height - borderSize )
+			{
+				if ( point.x < borderSize )
+				{
+					return SDL_HitTestResult.ResizeBottomLeft;
+				}
+				else if ( point.x > width - borderSize )
+				{
+					return SDL_HitTestResult.ResizeBottomRight;
+				}
+				else
+				{
+					return SDL_HitTestResult.ResizeBottom;
+				}
+			}
+			else if ( point.x < borderSize )
+			{
+				return SDL_HitTestResult.ResizeLeft;
+			}
+			else if ( point.x > width - borderSize )
+			{
+				return SDL_HitTestResult.ResizeRight;
+			}
+			else if ( point.y < 30 )
+			{
+				if ( point.x < Screen.Size.X - 143 )
+				{
+					return SDL_HitTestResult.Draggable;
+				}
+			}
 
-	public static bool Pressed( InputButton button )
-	{
-		return IsKeyPressed( button )
-			&& !WasKeyPressed( button );
-	}
+			return SDL_HitTestResult.Normal;
+		}
 
-	public static bool Down( InputButton button )
-	{
-		return IsKeyPressed( button );
-	}
+		public struct UserData
+		{
+			public Action RenderAction;
+		}
 
-	public static bool Released( InputButton button )
-	{
-		return !IsKeyPressed( button )
-			&& WasKeyPressed( button );
+		public static unsafe int ExposeEventWatcher( IntPtr pUserData, IntPtr pSdlEvent )
+		{
+			var ev = Marshal.PtrToStructure<SDL.SDL_Event>( pSdlEvent );
+			var userData = Marshal.PtrToStructure<UserData>( pUserData );
+
+			if ( ev.type == SDL.SDL_EventType.SDL_WINDOWEVENT )
+			{
+				SDL.SDL_WindowEvent we = Unsafe.Read<SDL.SDL_WindowEvent>( &ev );
+
+				if ( we.windowEvent == SDL.SDL_WindowEventID.SDL_WINDOWEVENT_EXPOSED )
+				{
+					userData.RenderAction.Invoke();
+				}
+			}
+
+			return 0;
+		}
+
+		// Define a minimal MSG struct to work with Windows messages.
+		[StructLayout( LayoutKind.Sequential )]
+		public struct MSG
+		{
+			public IntPtr hwnd;
+			public uint message;
+			public UIntPtr wParam;
+			public IntPtr lParam;
+			public uint time;
+			public POINT pt;
+		}
+
+		[StructLayout( LayoutKind.Sequential )]
+		public struct POINT
+		{
+			public int x;
+			public int y;
+		}
+
+		public static unsafe IntPtr WindowsMessageHook( IntPtr userdata, IntPtr hWnd, uint message, ulong wParam, long lParam )
+		{
+			const uint WM_NCPAINT = 0x0014;
+
+			if ( message == WM_NCPAINT )
+			{
+				return IntPtr.Zero;
+			}
+
+			return (IntPtr)1;
+		}
+
+		public static unsafe void Update()
+		{
+			PreviousSnapshot = Snapshot;
+			Snapshot.KeysDown = new List<SDL.SDL_Keysym>();
+			Snapshot.MouseDelta = Vector2.Zero;
+			Snapshot.WheelDelta = 0;
+
+			SDL.SDL_Event e;
+			while ( SDL.SDL_PollEvent( out e ) != 0 )
+			{
+				switch ( e.type )
+				{
+					case SDL.SDL_EventType.SDL_MOUSEMOTION:
+						SDL.SDL_MouseMotionEvent mme = Unsafe.Read<SDL.SDL_MouseMotionEvent>( &e );
+						Snapshot.MouseDelta = new Vector2( mme.xrel, mme.yrel );
+						Snapshot.MousePosition = new Vector2( mme.x, mme.y );
+						break;
+
+					case SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN:
+					case SDL.SDL_EventType.SDL_MOUSEBUTTONUP:
+						SDL.SDL_MouseButtonEvent mbe = Unsafe.Read<SDL.SDL_MouseButtonEvent>( &e );
+						bool isButtonDown = (mbe.type == SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN);
+
+						switch ( mbe.button )
+						{
+							case (byte)SDL.SDL_BUTTON_LEFT:
+								Snapshot.MouseLeft = isButtonDown;
+								break;
+							case (byte)SDL.SDL_BUTTON_RIGHT:
+								Snapshot.MouseRight = isButtonDown;
+								break;
+							default:
+								break;
+						}
+
+						break;
+
+					case SDL.SDL_EventType.SDL_MOUSEWHEEL:
+						SDL.SDL_MouseWheelEvent mwe = Unsafe.Read<SDL.SDL_MouseWheelEvent>( &e );
+						Snapshot.WheelDelta = mwe.y;
+						break;
+
+					case SDL.SDL_EventType.SDL_KEYDOWN:
+					case SDL.SDL_EventType.SDL_KEYUP:
+						SDL.SDL_KeyboardEvent kbe = Unsafe.Read<SDL.SDL_KeyboardEvent>( &e );
+						bool isKeyDown = (kbe.type == SDL.SDL_EventType.SDL_KEYDOWN);
+
+						if ( isKeyDown )
+						{
+							if ( !Snapshot.KeysDown.Any( x => x.sym == kbe.keysym.sym ) )
+								Snapshot.KeysDown.Add( kbe.keysym );
+						}
+						else
+						{
+							Snapshot.KeysDown.RemoveAll( x => x.sym == kbe.keysym.sym );
+						}
+
+						break;
+
+					//case SDL_EventType.TextInput:
+					//	SDL_TextInputEvent tie = Unsafe.Read<SDL_TextInputEvent>( &e );
+
+					//	uint byteCount = 0;
+					//	// Loop until the null terminator is found or maximum size is reached.
+					//	while ( byteCount < SDL_TextInputEvent.MaxTextSize && tie.text[byteCount++] != 0 )
+					//	{
+					//	}
+
+					//	if ( byteCount > 1 )
+					//	{
+					//		// Exclude the null terminator.
+					//		byteCount -= 1;
+					//		int charCount = Encoding.UTF8.GetCharCount( tie.text, (int)byteCount );
+					//		char* charsPtr = stackalloc char[charCount];
+					//		Encoding.UTF8.GetChars( tie.text, (int)byteCount, charsPtr, charCount );
+					//		for ( int i = 0; i < charCount; i++ )
+					//		{
+					//			keyCharPresses.Add( charsPtr[i] );
+					//		}
+					//	}
+					//	break;
+
+					case SDL.SDL_EventType.SDL_WINDOWEVENT:
+						SDL.SDL_WindowEvent we = Unsafe.Read<SDL.SDL_WindowEvent>( &e );
+						switch ( we.windowEvent )
+						{
+							case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED:
+							case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_SIZE_CHANGED:
+								var newSize = new Point2( we.data1, we.data2 );
+								Screen.UpdateFrom( newSize );
+								Event.Run( Event.Window.ResizedAttribute.Name, newSize );
+								break;
+
+							case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE:
+								// Handle a window close event.
+								Environment.Exit( 0 );
+								break;
+
+							default:
+								break;
+						}
+						break;
+
+				}
+			}
+		}
 	}
 }

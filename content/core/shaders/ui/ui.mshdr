@@ -17,6 +17,9 @@
 //
 layout(set = 0, binding = 0) uniform texture2D g_tAtlas;
 layout(set = 0, binding = 1) uniform sampler g_sSampler;
+layout(set = 0, binding = 2) uniform Info {
+    vec2 g_vScreenSize;
+} g_info;
 
 struct VS_OUT
 {
@@ -24,7 +27,7 @@ struct VS_OUT
     vec3 vPositionPS;
     vec2 vTexCoords;
     vec4 vColor;
-    float flScreenPxRange;
+    vec2 vUnitRange;
     vec2 vPanelPos;
     vec2 vPanelSize;
 };
@@ -54,6 +57,7 @@ layout(location = 3) in vec2 g_vPanelPos;
 layout(location = 4) in vec2 g_vPanelSize;
 layout(location = 5) in int g_renderMode;
 layout(location = 6) in vec4 g_rounding;
+layout(location = 7) in vec2 g_vUnitRange;
 
 //
 // Out
@@ -66,12 +70,16 @@ void main()
 {
     vec4 pos = vec4(g_vPosition.xy, 0.0, 1.0);
 
+    // vec2 vScreenSize = g_info.g_vScreenSize;
+    // pos.xy = floor(pos.xy * vScreenSize) / vScreenSize;
+
     vs_out.vPositionWS = g_vPosition;
     vs_out.vPositionPS = pos.xyz;
     vs_out.vTexCoords = g_vTexCoords;
     vs_out.vColor = g_vColor;
     vs_out.vPanelPos = g_vPanelPos;
     vs_out.vPanelSize = g_vPanelSize;
+    vs_out.vUnitRange = g_vUnitRange;
 
     vs_renderMode = g_renderMode;
     vs_rounding = g_rounding;
@@ -98,6 +106,22 @@ layout(location = 9) flat in vec4 fs_rounding;
 // Out
 //
 layout(location = 0) out vec4 fragColor;
+
+float median(float r, float g, float b)
+{
+    return max(min(r, g), min(max(r, g), b));
+}
+
+float luminance(vec3 color)
+{
+    return dot(color, vec3(0.299, 0.587, 0.114));
+}
+
+float screenPxRange()
+{
+    vec2 screenTexSize = vec2( 1.0 ) / fwidth(fs_in.vTexCoords);
+    return max( 0.1 * dot(fs_in.vUnitRange, screenTexSize), 1.0 );
+}
 
 vec4 GetTextureSample(texture2D tex)
 {
@@ -129,6 +153,7 @@ void main()
     else
     {
         float opacity = 1.0;
+        vec3 additive = vec3(0.0, 0.0, 0.0);
 
         if ((fs_renderMode & RENDER_MODE_USE_SDF) == RENDER_MODE_USE_SDF)
         {
@@ -136,13 +161,18 @@ void main()
             float g = texSample.g;
             float b = texSample.b;
 
-            float median = max(min(r, g), min(max(r, g), b));
-            float signed_dist = 1.0 * (median - 0.5);
+            float thickness = mix(0.5, 0.4, clamp(luminance(fs_in.vColor.rgb), 0, 1));
 
-            opacity = clamp(signed_dist + 0.5, 0.0, 1.0);
+            float dist = median(r, g, b);
+            float pxDist = screenPxRange() * (dist - thickness);
+            opacity = clamp(pxDist + 0.5, 0.0, 1.0); 
+
+            additive += dFdx(dist * 0.33f) * vec3( 0, 0, 1 );
+            additive += dFdx(-dist * 0.33f) * vec3( 1, 0, 0 );
         }
 
         fragColor = vec4(fs_in.vColor.rgb, opacity * fs_in.vColor.a);
+        fragColor.xyz += additive;
     }
 
     vec2 uv = (fs_in.vPanelPos * 2.0) - fs_in.vPanelSize;

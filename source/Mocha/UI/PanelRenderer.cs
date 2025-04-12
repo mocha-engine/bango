@@ -13,16 +13,10 @@ public partial class PanelRenderer
 			.WithFramebuffer( RendererInstance.Current.MultisampledFramebuffer )
 			.Build();
 
-		pipeline = RenderPipeline.Factory
-			.AddObjectResource( "g_tAtlas", ResourceKind.TextureReadOnly, ShaderStages.Fragment )
-			.AddObjectResource( "g_sSampler", ResourceKind.Sampler, ShaderStages.Fragment )
-			.WithVertexElementDescriptions( UIVertex.VertexElementDescriptions )
-			.WithFramebuffer( RendererInstance.Current.MultisampledFramebuffer )
-			.WithShader( shader )
-			.Build();
-
 		AtlasBuilder.OnBuild += CreateResources;
 		shader.OnRecompile += CreateResources;
+
+		Event.Register( this );
 	}
 
 	public void NewFrame()
@@ -37,15 +31,17 @@ public partial class PanelRenderer
 		var textureCoordinates = info.TextureCoordinates ?? new Common.Rectangle( 0, 0, 1, 1 );
 		var flags = info.Flags;
 		var rounding = info.Rounding ?? new Vector4( 0, 0, 0, 0 );
+		var unitRange = info.UnitRange ?? new Vector2( 0.0f );
 
 		var dpi = Screen.DpiScale;
+		var renderScale = Screen.RenderScale;
 		var dpiRect = rect;
-		dpiRect.X *= dpi;
-		dpiRect.Y *= dpi;
-		dpiRect.Width *= dpi;
-		dpiRect.Height *= dpi;
+		dpiRect.X *= dpi * renderScale;
+		dpiRect.Y *= dpi * renderScale;
+		dpiRect.Width *= dpi * renderScale;
+		dpiRect.Height *= dpi * renderScale;
 
-		var ndcRect = dpiRect / Screen.RawSize;
+		var ndcRect = dpiRect / (Screen.RawSize * Screen.RenderScale);
 		
 		var vertices = new UIVertex[4];
 		for ( int i = 0; i < 4; i++ )
@@ -77,7 +73,8 @@ public partial class PanelRenderer
 				_ => Vector4.Zero,
 			};
 			tx.Flags = (short)flags;
-			tx.Rounding = rounding;
+			tx.Rounding = rounding * dpi * renderScale;
+			tx.UnitRange = unitRange;
 
 			vertices[i] = tx;
 		}

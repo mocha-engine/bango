@@ -16,16 +16,22 @@ internal class Game
 			Log.Trace( "Loaded RenderDoc" );
 		}
 
-		using ( var _ = new Stopwatch( "Game init" ) )
+		using ( _ = new Stopwatch( "Full init" ) )
 		{
-			Log.Trace( "Game init" );
-			renderer = new();
-			editor = new();
+			using ( _ = new Stopwatch( "Renderer init" ) )
+			{
+				renderer = new();
+			}
 
-			// Must be called before everything else
-			renderer.PreUpdate += Input.Update;
-			renderer.RenderOverlays += editor.Render;
+			using ( _ = new Stopwatch( "Editor init" ) )
+			{
+				editor = new();
+			}
 		}
+
+		// Must be called before everything else
+		renderer.PreUpdate += Input.Update;
+		renderer.RenderOverlays += editor.Render;
 
 		renderer.Run();
 	}

@@ -6,7 +6,8 @@ public static class Screen
 	public static Vector2 RawSize { get; set; } = new( 1, 1 );
 
 	public static float Aspect => (float)Size.X / (float)Size.Y;
-	public static float DpiScale { get; set; } = 1.25f;
+	public static float DpiScale { get; set; } = 1.0f;
+	public static float RenderScale { get; set; } = 2.0f;
 
 	public static void UpdateFrom( Point2 size )
 	{
