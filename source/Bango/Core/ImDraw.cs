@@ -307,7 +307,7 @@ public static class ImDraw
 	{
 		(Color strokeStart, Color strokeEnd) = (Theme.Default800, Theme.Default800);
 		(Color fillStart, Color fillEnd) = (Theme.Default900, Theme.Default900);
-		(Color mouseDownFillStart, Color mouseDownFillEnd) = (Theme.Default50, Theme.Default50);
+		(Color mouseDownFillStart, Color mouseDownFillEnd) = (Theme.Default900, Theme.Default900);
 
 		ButtonInternal( text, strokeStart, strokeEnd, fillStart, fillEnd, mouseDownFillStart, mouseDownFillEnd, Theme.Default600 );
 		return false;
