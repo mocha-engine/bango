@@ -32,7 +32,7 @@ public partial class Application
 		Graphics.PanelRenderer.NewFrame();
 
 		if ( DrawBackground )
-			Graphics.DrawRect( new Rectangle( new Vector2( 0, 30 + headerHeight ), Screen.Size ), Theme.Default950, Vector4.Zero );
+			Graphics.DrawRect( new Rectangle( new Vector2( 0, 50 + headerHeight ), Screen.Size ), Theme.Default800.WithAlpha( 0.15f ), Vector4.Zero );
 
 		ImDraw.NewFrame();
 		ImDraw.TitleBar();

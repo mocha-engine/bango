@@ -78,9 +78,19 @@ public struct Rectangle
 		return new Rectangle( this.X - v.X, this.Y - v.Y, this.Width + v.X * 2, this.Height + v.Y * 2 );
 	}
 
+	public Rectangle Expand( Vector4 v )
+	{
+		return new Rectangle( this.X - v.X, this.Y - v.Y, this.Width + v.Z * 2f, this.Height + v.W * 2f );
+	}
+
 	public Rectangle Shrink( Vector2 v )
 	{
 		return new Rectangle( this.X + v.X, this.Y + v.Y, this.Width - v.X * 2, this.Height - v.Y * 2 );
+	}
+
+	public Rectangle Shrink( Vector4 v )
+	{
+		return new Rectangle( this.X + v.X, this.Y + v.Y, this.Width - v.Z * 2f, this.Height - v.W * 2f );
 	}
 
 	public bool Intersects( Rectangle rect )

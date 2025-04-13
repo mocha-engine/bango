@@ -1,11 +1,12 @@
 ﻿namespace Bango;
+
 public static class ImDraw
 {
 	private record CursorState
 	{
 		public string FontFamily = "segoeui";
 		public float FontSize = 13.0f;
-		public Vector2 Padding = new( 8, 8 );
+		public Vector2 Padding = new( 8, 16 );
 		public Vector2 Position = new();
 
 		public CursorState()
@@ -74,22 +75,30 @@ public static class ImDraw
 
 	public static void TitleBar()
 	{
-		var bounds = new Rectangle( new Vector2( 0, 0 ), new Vector2( Screen.Size.X, 30 ) );
+		var bounds = new Rectangle( new Vector2( 0, 0 ), new Vector2( Screen.Size.X, 48 ) );
 
 		Paint.Clear();
 
+		//
+		// Draw window icon
+		//
 		var tex = Texture.Builder.FromPath( "core/logo.png" ).Build();
-		Graphics.DrawTexture( new Rectangle( 8, 8, 16, 16 ), tex );
+		Graphics.DrawTexture( new Rectangle( (bounds.Height - 16) / 2f, (bounds.Height - 16) / 2f, 16, 16 ), tex );
 
-		Cursor.BumpPosition( new Vector2( 24, 0 ) );
+		//
+		// Draw window title
+		//
+		Cursor.BumpPosition( new Vector2( (bounds.Height / 2f) + 16, bounds.Height / 2f - 24 ) );
 		SetFont( "segoeui", 12.0f );
 		Text( SdlWindow.Current.Title, Color.White ); Inline();
+		Cursor.BumpPosition( new Vector2( -116, 0 ) );
+		Text( SdlWindow.Current.Title, Color.White ); Inline();
 		var titleWidth = Graphics.MeasureText( SdlWindow.Current.Title, Cursor.Font, Cursor.FontSize ).X;
-		Cursor.BumpPosition( new Vector2( Screen.Size.X - titleWidth - 175, 0 ) );
+		Cursor.BumpPosition( new Vector2( Screen.Size.X - titleWidth - 168 - (bounds.Height / 2f), -(bounds.Height / 2f) + 16 ) );
 
 		void DrawButton( char character, Action onClick )
 		{
-			var buttonBounds = new Rectangle( Cursor.Position, new Vector2( 45.0f, 30.0f ) );
+			var buttonBounds = new Rectangle( Cursor.Position, new Vector2( 45.0f, bounds.Height ) );
 
 			Color foregroundColor = Color.White;
 			Color backgroundColor = Theme.Default50;
@@ -106,7 +115,7 @@ public static class ImDraw
 				}
 				else
 				{
-					backgroundColor = Theme.Default800;
+					backgroundColor = Theme.Default900;
 
 					if ( Input.MouseLeftDown )
 						backgroundColor = Theme.Default700;
@@ -127,7 +136,7 @@ public static class ImDraw
 			var glyphSize = new Vector2( glyphRect.Width, glyphRect.Height );
 			glyphSize *= 10.0f / Cursor.Font.FontData.Atlas.Size;
 
-			var glyphPos = new Rectangle( new Vector2( buttonBounds.X + 17.0f, buttonBounds.Y + 21.0f ), glyphSize );
+			var glyphPos = new Rectangle( new Vector2( buttonBounds.X + 17.0f, buttonBounds.Y + (bounds.Height / 2f) + 5f ), glyphSize );
 			glyphPos.X += (float)glyph.PlaneBounds.Left * 11.0f;
 			glyphPos.Y -= (float)glyph.PlaneBounds.Top * 11.0f;
 
@@ -230,10 +239,8 @@ public static class ImDraw
 		var font = Cursor.Font;
 		var fontSize = Cursor.FontSize;
 
-		var padding = new Vector2( 24, 16 );
 		var textSize = Graphics.MeasureText( text, font, fontSize );
-		var bounds = new Rectangle( Cursor.Position, textSize + padding );
-		bounds.Width = bounds.Width.Clamp( 100, 10000 );
+		var bounds = new Rectangle( Cursor.Position, new Vector2( textSize.X + Theme.ControlPadding * 2, Theme.ControlHeight ) );
 
 		Paint.Clear();
 
@@ -254,16 +261,20 @@ public static class ImDraw
 			}
 		}
 
-		Paint.SetStrokeWidth( 1.0f );
+		Paint.SetShadowSize( 4.0f );
+		Paint.SetShadowColor( new Color( 0, 0, 0, 32 ) );
+		Paint.SetShadowOffset( new Vector2( 0, 1 ) );
+
+		Paint.SetStrokeWidth( new Vector4( 0, 1, 0, 0 ) );
 		Paint.SetStrokeLinearGradient( strokeStart, strokeEnd );
 		Paint.SetFillLinearGradient( fillStart, fillEnd );
 
-		Paint.DrawRect( bounds, new( 6 ) );
+		Paint.DrawRect( bounds, new( 12 ) );
 
 		Cursor.PushPosition();
 
 		// Apply padding
-		Cursor.BumpPosition( new Vector2( (bounds.Width - textSize.X) / 2f, padding.Y / 2f ) );
+		Cursor.BumpPosition( new Vector2( Theme.ControlPadding, (Theme.ControlHeight - textSize.Y) / 2f ) );
 
 		Text( text, textColor );
 
@@ -277,8 +288,8 @@ public static class ImDraw
 
 	public static bool Button( string text )
 	{
-		(Color strokeStart, Color strokeEnd) = (Theme.Default700, Theme.Default700);
-		(Color fillStart, Color fillEnd) = (Theme.Default800, Theme.Default800);
+		(Color strokeStart, Color strokeEnd) = (Theme.Default600, Theme.Default950);
+		(Color fillStart, Color fillEnd) = (Theme.Default700, Theme.Default700);
 		(Color mouseDownFillStart, Color mouseDownFillEnd) = (Theme.Default600, Theme.Default600);
 
 		return ButtonInternal( text, strokeStart, strokeEnd, fillStart, fillEnd, mouseDownFillStart, mouseDownFillEnd, Theme.Default50 );
@@ -286,7 +297,7 @@ public static class ImDraw
 
 	public static bool ButtonLight( string text )
 	{
-		(Color strokeStart, Color strokeEnd) = (Theme.Default200, Theme.Default200);
+		(Color strokeStart, Color strokeEnd) = (Theme.Default200, Theme.Default100);
 		(Color fillStart, Color fillEnd) = (Theme.Default100, Theme.Default100);
 		(Color mouseDownFillStart, Color mouseDownFillEnd) = (Theme.Default200, Theme.Default200);
 
@@ -295,7 +306,7 @@ public static class ImDraw
 
 	public static bool ButtonDelete( string text )
 	{
-		(Color strokeStart, Color strokeEnd) = ("#b91c1c", "#b91c1c");
+		(Color strokeStart, Color strokeEnd) = ("#b91c1c", "#991b1b");
 		(Color fillStart, Color fillEnd) = ("#991b1b", "#991b1b");
 		(Color mouseDownFillStart, Color mouseDownFillEnd) = ("#dc2626", "#dc2626");
 
@@ -319,7 +330,7 @@ public static class ImDraw
 		var font = Cursor.Font;
 		var fontSize = Cursor.FontSize;
 
-		var padding = new Vector2( 24, 16 );
+		var padding = new Vector2( 32, 16 );
 		var textSize = Graphics.MeasureText( text, font, fontSize );
 		var bounds = new Rectangle( Cursor.Position, textSize + padding );
 		bounds.Width = bounds.Width.Clamp( 100, 10000 );
@@ -334,30 +345,30 @@ public static class ImDraw
 
 		// Check box
 		{
-			var r = new Rectangle( Cursor.Position, 16 );
+			var r = new Rectangle( Cursor.Position, 20 );
 			Paint.SetStrokeWidth( 1.0f );
 
 			if ( value )
 			{
-				Paint.SetStrokeSolid( Theme.Default950 );
-				Paint.SetFillSolid( Theme.Default950 );
+				Paint.SetStrokeSolid( Theme.Accent );
+				Paint.SetFillSolid( Theme.Accent );
 			}
 			else
 			{
 				Paint.SetStrokeSolid( Theme.Default500 );
-				Paint.SetFillSolid( Theme.Default200 );
+				Paint.SetFillSolid( Theme.Default900 );
 			}
 
-			Paint.DrawRect( r, new( 6 ) );
+			Paint.DrawRect( r, new( 10 ) );
 		}
 
 		if ( value )
 		{
 			Cursor.PushPosition();
 
-			Cursor.BumpPosition( new Vector2( 1, 1 ) );
+			Cursor.BumpPosition( new Vector2( 3, 3 ) );
 			SetFont( "segoe", 14f );
-			Text( new string( (char)0xE73E, 1 ), Theme.Default50 );
+			Text( new string( (char)0xE73E, 1 ), value ? Theme.Default950 : Theme.Default50 );
 			SetFontDefault();
 
 			Cursor.PopPosition();
@@ -365,7 +376,7 @@ public static class ImDraw
 
 		Cursor.PushPosition();
 
-		Cursor.BumpPosition( new Vector2( 22, 0 ) );
+		Cursor.BumpPosition( new Vector2( 28, 1 ) );
 		Text( text );
 
 		Cursor.PopPosition();
@@ -377,6 +388,53 @@ public static class ImDraw
 		return isChanged;
 	}
 
+	public static bool TextBox( ref string value, string? placeholder = null )
+	{
+		(Color strokeStart, Color strokeEnd) = (Theme.Default700, Theme.Default700);
+		(Color fillStart, Color fillEnd) = (Theme.Default800, Theme.Default800);
+
+		var isClicked = false;
+
+		var font = Cursor.Font;
+		var fontSize = Cursor.FontSize;
+
+		var padding = new Vector2( 24, 16 );
+		var textSize = Graphics.MeasureText( value, font, fontSize );
+		var bounds = new Rectangle( Cursor.Position, new Vector2( Screen.Size.X - Cursor.Padding.X * 2, Theme.ControlHeight ) );
+		bounds.Width = bounds.Width.Clamp( 100, 10000 );
+
+		Paint.Clear();
+
+		Paint.SetStrokeWidth( 1.0f );
+		Paint.SetStrokeLinearGradient( strokeStart, strokeEnd );
+		Paint.SetFillLinearGradient( fillStart, fillEnd );
+
+		Paint.DrawRect( bounds, new( 6 ) );
+
+		Cursor.PushPosition();
+
+		// Apply padding
+		Cursor.BumpPosition( new Vector2( padding.X / 2f, (Theme.ControlHeight - textSize.Y) / 2f ) );
+
+		var text = value;
+		var color = Theme.Default50;
+
+		if ( placeholder != null && string.IsNullOrEmpty( value ) )
+		{
+			text = placeholder;
+			color = Theme.Default500;
+		}
+
+		Text( text, color );
+
+		Cursor.PopPosition();
+
+		Cursor.Advance( bounds );
+		Cursor.AddSpacing();
+
+		return isClicked;
+	}
+
 	public static void Inline()
 	{
 		Cursor.SameLine();
@@ -386,11 +444,11 @@ public static class ImDraw
 	{
 		var bounds = new Rectangle( Cursor.Position, new Vector2( Screen.Size.X, 32 ) );
 
-		Cursor.BumpPosition( new Vector2( 0, 16.0f ) );
+		Cursor.BumpPosition( new Vector2( 0, 10.0f ) );
 
 		Paint.Clear();
-		Paint.SetFillSolid( Theme.Default50.WithAlpha( 0.005f ) );
-		Paint.DrawRect( new Rectangle( Cursor.Position, new Vector2( Screen.Size.X - (Cursor.Padding.X * 2.0f), 2.0f ) ) );
+		Paint.SetFillSolid( Theme.Default50.WithAlpha( 0.25f ) );
+		Paint.DrawRect( new Rectangle( Cursor.Position, new Vector2( Screen.Size.X - (Cursor.Padding.X * 2.0f), 1.0f ) ) );
 
 		Cursor.Advance( bounds );
 	}

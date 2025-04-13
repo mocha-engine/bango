@@ -126,7 +126,7 @@ public struct Color
 			Red,
 			Green,
 			Blue,
-			(byte)Math.Max( 0, (255 / alpha) )
+			(byte)Math.Max( 0, (alpha * 255f) )
 		);
 	}
 }

@@ -6,7 +6,7 @@ public static class Paint
 	{
 		public FillMode FillMode = null!;
 		public FillMode StrokeMode = null!;
-		public float Stroke = 0.0f;
+		public Vector4 Stroke = Vector4.Zero;
 
 		public float ShadowSize = 0.0f;
 		public Vector2 ShadowOffset = Vector2.Zero;
@@ -21,7 +21,7 @@ public static class Paint
 		{
 			FillMode = FillMode.Solid( Vector4.Zero );
 			StrokeMode = FillMode.Solid( Vector4.Zero );
-			Stroke = 0f;
+			Stroke = Vector4.Zero;
 
 			ShadowSize = 0.0f;
 			ShadowOffset = Vector2.Zero;
@@ -33,12 +33,17 @@ public static class Paint
 
 	public static void SetStrokeWidth( float strokeWidth )
 	{
+		CurrentState.Stroke = Vector4.One * strokeWidth;
+	}
+
+	public static void SetStrokeWidth( Vector4 strokeWidth )
+	{
 		CurrentState.Stroke = strokeWidth;
 	}
 
 	public static void SetStrokeLinearGradient( Color start, Color end )
 	{
-		CurrentState.StrokeMode = FillMode.LinearGradient( start, start );
+		CurrentState.StrokeMode = FillMode.LinearGradient( start, end );
 	}
 
 	public static void SetStrokeSolid( Color color )
@@ -91,17 +96,15 @@ public static class Paint
 		//
 		// Draw border
 		//
-		if ( CurrentState.Stroke > 0f )
+		if ( CurrentState.Stroke.LengthSquared() > 0f )
 		{
 			var info = new RectangleInfo()
 			{
 				FillMode = CurrentState.StrokeMode,
-				Rounding = rounding
+				Rounding = rounding + CurrentState.Stroke
 			};
 
-			Graphics.PanelRenderer.AddRectangle( rectangle, info );
-			rectangle = rectangle.Shrink( CurrentState.Stroke );
-			rounding -= Vector4.One * CurrentState.Stroke * 4f;
+			Graphics.PanelRenderer.AddRectangle( rectangle.Expand( CurrentState.Stroke ), info );
 		}
 
 		//

@@ -67,7 +67,7 @@ public class SdlWindow
 			| SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE
 			| SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN;
 
-		SdlHandle = SDL.SDL_CreateWindow( "Bango Demo", 128, 128, 600, 300, windowFlags );
+		SdlHandle = SDL.SDL_CreateWindow( "Bango Demo", 128, 128, 400, 300, windowFlags );
 
 		SDL.SDL_SetWindowResizable( SdlHandle, SDL.SDL_bool.SDL_TRUE );
 
