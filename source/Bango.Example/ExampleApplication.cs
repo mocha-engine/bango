@@ -4,7 +4,7 @@ namespace Example;
 
 public class ExampleApplication : Application
 {
-	public ExampleApplication() : base( appTitle: "Example Application", headerHeight: 90 )
+	public ExampleApplication() : base( appTitle: "Example Application", headerHeight: 88 )
 	{
 
 	}
@@ -27,7 +27,7 @@ public class ExampleApplication : Application
 			ImDraw.Button( "Item 3" );
 		}
 
-		ImDraw.Separator();
+		ImDraw.Spacing( 32.0f );
 
 		//
 		// Labels
@@ -51,7 +51,7 @@ public class ExampleApplication : Application
 			ImDraw.SetFontDefault();
 			ImDraw.Text( "Small" );
 
-			ImDraw.Spacing( 16.0f );
+			ImDraw.Spacing( 32.0f );
 		}
 
 		ImDraw.Separator();
@@ -82,6 +82,12 @@ public class ExampleApplication : Application
 			ImDraw.Spacing();
 
 			ImDraw.Checkbox( "Enabled", ref isChecked );
+
+			var isDark = Theme.IsDark;
+			if ( ImDraw.Checkbox( "Dark mode", ref isDark ) )
+			{
+				Theme.IsDark = isDark;
+			}
 		}
 	}
 }
