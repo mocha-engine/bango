@@ -91,8 +91,6 @@ public static class ImDraw
 		Cursor.BumpPosition( new Vector2( (bounds.Height / 2f) + 8, bounds.Height / 2f - 24 ) );
 		SetFont( "segoeui", 12.0f );
 		Text( SdlWindow.Current.Title ); Inline();
-		Cursor.BumpPosition( new Vector2( -116, 0 ) );
-		Text( SdlWindow.Current.Title ); Inline();
 		var titleWidth = Graphics.MeasureText( SdlWindow.Current.Title, Cursor.Font, Cursor.FontSize ).X;
 		Cursor.BumpPosition( new Vector2( Screen.Size.X - titleWidth - 166 - (bounds.Height / 2f), -(bounds.Height / 2f) + 16 ) );
 
