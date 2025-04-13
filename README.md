@@ -2,7 +2,7 @@
 
 Bango is an App Framework for people who want their apps to look good and perform well.
 
-![image](https://github.com/user-attachments/assets/c0b2952c-fa75-499b-8117-a4209d037263)
+![image](https://github.com/user-attachments/assets/4523e67f-271b-44d2-a8f5-58779bd819f9)
 
 ## Why
 
