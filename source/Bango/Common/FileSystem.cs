@@ -3,7 +3,7 @@
 namespace Bango;
 public class FileSystem
 {
-	public static FileSystem Game => new FileSystem( "content\\" );
+	public static FileSystem Main => new FileSystem( "content\\" );
 
 	private List<FileSystemWatcher> _watchers = new();
 	private string BasePath { get; }

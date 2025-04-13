@@ -24,7 +24,7 @@ public class Shader : Asset
 		var directoryName = System.IO.Path.GetDirectoryName( Path );
 		var fileName = System.IO.Path.GetFileName( Path );
 		
-		watcher = FileSystem.Game.CreateWatcher( directoryName, fileName, () =>
+		watcher = FileSystem.Main.CreateWatcher( directoryName, fileName, () =>
 		{
 			IsDirty = true;
 		} );
@@ -37,7 +37,7 @@ public class Shader : Asset
 	{
 		try
 		{
-			using ( FileStream inputStream = FileSystem.Game.OpenRead( path ) )
+			using ( FileStream inputStream = FileSystem.Main.OpenRead( path ) )
 				return inputStream.Length > 0;
 		}
 		catch ( Exception )
@@ -51,7 +51,7 @@ public class Shader : Asset
 		if ( !IsFileReady( Path ) )
 			return;
 
-		var shaderText = FileSystem.Game.ReadAllText( Path );
+		var shaderText = FileSystem.Main.ReadAllText( Path );
 
 		var vertexShaderText = $"#version 450\n#define VERTEX\n{shaderText}";
 		var fragmentShaderText = $"#version 450\n#define FRAGMENT\n{shaderText}";

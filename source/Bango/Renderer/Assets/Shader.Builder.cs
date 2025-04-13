@@ -24,7 +24,7 @@ public class ShaderBuilder
 	public ShaderBuilder FromPath( string mshdrPath )
 	{
 		Path = mshdrPath;
-		var shaderText = FileSystem.Game.ReadAllText( mshdrPath );
+		var shaderText = FileSystem.Main.ReadAllText( mshdrPath );
 
 		var vertexShaderText = $"#version 450\n#define VERTEX\n{shaderText}";
 		var fragmentShaderText = $"#version 450\n#define FRAGMENT\n{shaderText}";

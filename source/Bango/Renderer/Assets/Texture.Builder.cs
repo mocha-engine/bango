@@ -89,7 +89,7 @@ public partial class TextureBuilder
 		if ( TryGetExistingTexture( path, out _ ) )
 			return new TextureBuilder() { path = path };
 
-		var fileData = FileSystem.Game.ReadAllBytes( path );
+		var fileData = FileSystem.Main.ReadAllBytes( path );
 		var image = ImageResult.FromMemory( fileData, ColorComponents.RedGreenBlueAlpha );
 
 		this.width = (uint)image.Width;
