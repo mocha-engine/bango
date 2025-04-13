@@ -31,6 +31,12 @@ public partial class PanelRenderer
 		var rounding = info.Rounding ?? new Vector4( 0, 0, 0, 0 );
 		var unitRange = info.UnitRange ?? new Vector2( 0.0f );
 
+		if ( !info.Flags.HasFlag( RenderMode.UseSdf ) )
+		{
+			rect.X = rect.X.FloorToInt();
+			rect.Y = rect.Y.FloorToInt();
+		}
+
 		var dpi = Screen.DpiScale;
 		var renderScale = Screen.RenderScale;
 		var dpiRect = rect;
@@ -46,8 +52,9 @@ public partial class PanelRenderer
 		{
 			var x = RectVertices[i];
 			var position = x.Position;
-			position.X = (x.Position.X * ndcRect.Size.X) + ndcRect.Position.X;
-			position.Y = (x.Position.Y * ndcRect.Size.Y) + ndcRect.Position.Y;
+
+			position.X = (position.X * ndcRect.Size.X) + ndcRect.Position.X;
+			position.Y = (position.Y * ndcRect.Size.Y) + ndcRect.Position.Y;
 
 			var texCoords = x.TexCoords;
 			texCoords.X = (x.TexCoords.X * textureCoordinates.Size.X) + textureCoordinates.Position.X;

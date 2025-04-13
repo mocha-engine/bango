@@ -76,10 +76,10 @@ namespace Bango;partial class PanelRenderer
 	[Event.Window.Resized]
 	public void OnWindowResized( Point2 newSize )
 	{
-		//pipeline.Delete();
-		//objectResourceSet?.Dispose();
+		pipeline.Delete();
+		objectResourceSet?.Dispose();
 
-		//CreateResources();
+		CreateResources();
 	}
 
 	private void UpdateBuffers()
