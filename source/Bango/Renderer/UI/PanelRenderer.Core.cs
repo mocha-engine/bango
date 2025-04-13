@@ -7,6 +7,7 @@ namespace Bango;partial class PanelRenderer
 	private uint indexCount;
 	private bool isDirty = false;
 
+	private DeviceBuffer uniformBuffer;
 	private DeviceBuffer vertexBuffer;
 	private DeviceBuffer indexBuffer;
 	private Shader shader;
@@ -57,14 +58,16 @@ namespace Bango;partial class PanelRenderer
 			.WithShader( shader )
 			.Build();
 
-		var ub = Device.ResourceFactory.CreateBuffer( new BufferDescription( 16, BufferUsage.UniformBuffer ) );
-		Device.UpdateBuffer( ub, 0, new float[] { Screen.Size.X, Screen.Size.Y } );
+		if ( uniformBuffer == null )
+			uniformBuffer = Device.ResourceFactory.CreateBuffer( new BufferDescription( 16, BufferUsage.UniformBuffer ) );
+
+		Device.UpdateBuffer( uniformBuffer, 0, new float[] { Screen.Size.X, Screen.Size.Y } );
 
 		var objectResourceSetDescription = new ResourceSetDescription(
 			pipeline.ResourceLayouts[0],
 			AtlasBuilder.Texture.VeldridTexture,
 			Device.Aniso4xSampler,
-			ub
+			uniformBuffer
 		);
 
 		objectResourceSet = Device.ResourceFactory.CreateResourceSet( objectResourceSetDescription );
@@ -73,7 +76,10 @@ namespace Bango;partial class PanelRenderer
 	[Event.Window.Resized]
 	public void OnWindowResized( Point2 newSize )
 	{
-		CreateResources();
+		//pipeline.Delete();
+		//objectResourceSet?.Dispose();
+
+		//CreateResources();
 	}
 
 	private void UpdateBuffers()

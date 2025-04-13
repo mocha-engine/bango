@@ -184,7 +184,7 @@ public class RendererInstance
 		{
 			PreferStandardClipSpaceYDirection = true,
 			PreferDepthRangeZeroToOne = true,
-			SwapchainDepthFormat = PixelFormat.D24_UNorm_S8_UInt,
+			SwapchainDepthFormat = null,
 			SwapchainSrgbFormat = false,
 			SyncToVerticalBlank = true,
 			HasMainSwapchain = true
@@ -202,6 +202,7 @@ public class RendererInstance
 		Device.MainSwapchain.Resize( (uint)(newSize.X * dpiScale), (uint)(newSize.Y * dpiScale) );
 
 		// Cleanup old MSAA resources
+		MultisampledFramebuffer?.ColorTargets[0].Target.Dispose();
 		MultisampledFramebuffer?.Dispose();
 		ResolveTexture?.Dispose();
 
