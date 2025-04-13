@@ -40,7 +40,7 @@ public class RendererInstance
 			1,
 			PixelFormat.B8_G8_R8_A8_UNorm,
 			TextureUsage.RenderTarget,
-			TextureSampleCount.Count4
+			TextureSampleCount.Count2
 		);
 
 		var colorTexture = Device.ResourceFactory.CreateTexture( colorTextureInfo );

@@ -101,7 +101,7 @@ public static class Paint
 			var info = new RectangleInfo()
 			{
 				FillMode = CurrentState.StrokeMode,
-				Rounding = rounding + CurrentState.Stroke
+				Rounding = rounding + CurrentState.Stroke * 2
 			};
 
 			Graphics.PanelRenderer.AddRectangle( rectangle.Expand( CurrentState.Stroke ), info );
