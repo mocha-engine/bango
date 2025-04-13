@@ -98,6 +98,11 @@ public class SdlWindow
 		Screen.UpdateFrom( Size );
 
 		Theme.IsDark = ShouldSystemUseDarkMode();
+
+		// todo: store and switch when IsDark changes
+		Theme.Accent = Theme.IsDark ? 
+			GetColorByTypeName( "ImmersiveSystemAccentLight2" )
+			: GetColorByTypeName( "ImmersiveSystemAccentDark2" );
 	}
 
 	public void Minimize()
@@ -172,6 +177,25 @@ public class SdlWindow
 		return result == 0;
 	}
 
+	private static Color GetColorByTypeName( string name )
+	{
+		var colorSet = GetImmersiveUserColorSetPreference( false, false );
+		var colorType = GetImmersiveColorTypeFromName( name );
+		var rawColor = GetImmersiveColorFromColorSetEx( colorSet, colorType, false, 0 );
+
+		var bytes = BitConverter.GetBytes( rawColor );
+		return new Color( bytes[0], bytes[1], bytes[2], bytes[3] );
+	}
+
 	[DllImport( "UXTheme.dll", SetLastError = true, EntryPoint = "#138" )]
 	private static extern bool ShouldSystemUseDarkMode();
+
+	[DllImport( "uxtheme.dll", EntryPoint = "#95", CharSet = CharSet.Unicode )]
+	private static extern uint GetImmersiveColorFromColorSetEx( uint dwImmersiveColorSet, uint dwImmersiveColorType, bool bIgnoreHighContrast, uint dwHighContrastCacheMode );
+
+	[DllImport( "uxtheme.dll", EntryPoint = "#96", CharSet = CharSet.Unicode )]
+	private static extern uint GetImmersiveColorTypeFromName( string name );
+
+	[DllImport( "uxtheme.dll", EntryPoint = "#98", CharSet = CharSet.Unicode )]
+	private static extern uint GetImmersiveUserColorSetPreference( bool bForceCheckRegistry, bool bSkipCheckOnFail );
 }
