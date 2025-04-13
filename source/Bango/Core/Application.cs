@@ -15,7 +15,14 @@ public partial class Application
 		Event.Register( this );
 		Instance = this;
 
+		OnStart();
+
 		bootstrap.Run();
+	}
+
+	public virtual void OnStart()
+	{
+
 	}
 
 	internal void Render( Veldrid.CommandList commandList )
