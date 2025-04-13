@@ -70,9 +70,6 @@ void main()
 {
     vec4 pos = vec4(g_vPosition.xy, 0.0, 1.0);
 
-    // vec2 vScreenSize = g_info.g_vScreenSize;
-    // pos.xy = floor(pos.xy * vScreenSize) / vScreenSize;
-
     vs_out.vPositionWS = g_vPosition;
     vs_out.vPositionPS = pos.xyz;
     vs_out.vTexCoords = g_vTexCoords;
@@ -161,7 +158,7 @@ void main()
             float g = texSample.g;
             float b = texSample.b;
 
-            float thickness = mix(0.5, 0.4, clamp(luminance(fs_in.vColor.rgb), 0, 1));
+            float thickness = mix(0.4, 0.35, clamp(luminance(fs_in.vColor.rgb), 0, 1));
 
             float dist = median(r, g, b);
             float pxDist = screenPxRange() * (dist - thickness);
