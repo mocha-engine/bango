@@ -86,7 +86,7 @@ public class SdlWindow
 		SDL.SDL_SetWindowsMessageHook( Input.WindowsMessageHook, IntPtr.Zero );
 		SDL.SDL_SetHint( "SDL_BORDERLESS_RESIZABLE_STYLE", "1" );
 		SDL.SDL_SetWindowBordered( SdlHandle, SDL.SDL_bool.SDL_FALSE );
-		SDL.SDL_SetWindowMinimumSize( SdlHandle, 300, 30 );
+		SDL.SDL_SetWindowMinimumSize( SdlHandle, 300, 300 );
 
 		WindowHandle = wmInfo.info.win.window;
 		InstanceHandle = wmInfo.info.win.hinstance;
