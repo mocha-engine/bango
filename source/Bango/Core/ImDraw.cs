@@ -6,7 +6,7 @@ public static class ImDraw
 	{
 		public string FontFamily = "segoeui";
 		public float FontSize = 13.0f;
-		public Vector2 Padding = new( 8, 16 );
+		public Vector2 Padding = new( 16, 16 );
 		public Vector2 Position = new();
 
 		public CursorState()
@@ -88,19 +88,19 @@ public static class ImDraw
 		//
 		// Draw window title
 		//
-		Cursor.BumpPosition( new Vector2( (bounds.Height / 2f) + 16, bounds.Height / 2f - 24 ) );
+		Cursor.BumpPosition( new Vector2( (bounds.Height / 2f) + 8, bounds.Height / 2f - 24 ) );
 		SetFont( "segoeui", 12.0f );
-		Text( SdlWindow.Current.Title, Color.White ); Inline();
+		Text( SdlWindow.Current.Title ); Inline();
 		Cursor.BumpPosition( new Vector2( -116, 0 ) );
-		Text( SdlWindow.Current.Title, Color.White ); Inline();
+		Text( SdlWindow.Current.Title ); Inline();
 		var titleWidth = Graphics.MeasureText( SdlWindow.Current.Title, Cursor.Font, Cursor.FontSize ).X;
-		Cursor.BumpPosition( new Vector2( Screen.Size.X - titleWidth - 168 - (bounds.Height / 2f), -(bounds.Height / 2f) + 16 ) );
+		Cursor.BumpPosition( new Vector2( Screen.Size.X - titleWidth - 166 - (bounds.Height / 2f), -(bounds.Height / 2f) + 16 ) );
 
 		void DrawButton( char character, Action onClick )
 		{
 			var buttonBounds = new Rectangle( Cursor.Position, new Vector2( 45.0f, bounds.Height ) );
 
-			Color foregroundColor = Color.White;
+			Color foregroundColor = Theme.IsDark ? Theme.Default50 : Theme.Default950;
 			Color backgroundColor = Theme.Default50;
 
 			if ( buttonBounds.Contains( Input.MousePosition ) )
@@ -115,7 +115,7 @@ public static class ImDraw
 				}
 				else
 				{
-					backgroundColor = Theme.Default900;
+					backgroundColor = Theme.IsDark ? Theme.Default900 : Theme.Default200;
 
 					if ( Input.MouseLeftDown )
 						backgroundColor = Theme.Default700;
@@ -209,7 +209,7 @@ public static class ImDraw
 					glyphPos,
 					font.FontTexture,
 					glyphRect,
-					color ?? Theme.Default50
+					color ?? (Theme.IsDark ? Theme.Default50 : Theme.Default950)
 				);
 			}
 
@@ -288,11 +288,22 @@ public static class ImDraw
 
 	public static bool Button( string text )
 	{
-		(Color strokeStart, Color strokeEnd) = (Theme.Default600, Theme.Default950);
-		(Color fillStart, Color fillEnd) = (Theme.Default700, Theme.Default700);
-		(Color mouseDownFillStart, Color mouseDownFillEnd) = (Theme.Default600, Theme.Default600);
+		if ( Theme.IsDark )
+		{
+			(Color strokeStart, Color strokeEnd) = (Theme.Default600, Theme.Default950);
+			(Color fillStart, Color fillEnd) = (Theme.Default700, Theme.Default700);
+			(Color mouseDownFillStart, Color mouseDownFillEnd) = (Theme.Default600, Theme.Default600);
 
-		return ButtonInternal( text, strokeStart, strokeEnd, fillStart, fillEnd, mouseDownFillStart, mouseDownFillEnd, Theme.Default50 );
+			return ButtonInternal( text, strokeStart, strokeEnd, fillStart, fillEnd, mouseDownFillStart, mouseDownFillEnd, Theme.Default50 );
+		}
+		else
+		{
+			(Color strokeStart, Color strokeEnd) = (Theme.Default300, Theme.Default300);
+			(Color fillStart, Color fillEnd) = (Theme.Default300, Theme.Default300);
+			(Color mouseDownFillStart, Color mouseDownFillEnd) = (Theme.Default300, Theme.Default300);
+
+			return ButtonInternal( text, strokeStart, strokeEnd, fillStart, fillEnd, mouseDownFillStart, mouseDownFillEnd, Theme.Default950 );
+		}
 	}
 
 	public static bool ButtonLight( string text )
@@ -355,8 +366,8 @@ public static class ImDraw
 			}
 			else
 			{
-				Paint.SetStrokeSolid( Theme.Default500 );
-				Paint.SetFillSolid( Theme.Default900 );
+				Paint.SetStrokeSolid( Theme.IsDark ? Theme.Default500 : Theme.Default300 );
+				Paint.SetFillSolid( Theme.IsDark ? Theme.Default900 : Theme.Default300 );
 			}
 
 			Paint.DrawRect( r, new( 10 ) );
@@ -390,8 +401,14 @@ public static class ImDraw
 
 	public static bool TextBox( ref string value, string? placeholder = null )
 	{
-		(Color strokeStart, Color strokeEnd) = (Theme.Default700, Theme.Default700);
-		(Color fillStart, Color fillEnd) = (Theme.Default800, Theme.Default800);
+		(Color strokeStart, Color strokeEnd) = (Theme.Default600, Theme.Default600);
+		(Color fillStart, Color fillEnd) = (Theme.Default900, Theme.Default900);
+
+		if ( !Theme.IsDark )
+		{
+			(strokeStart, strokeEnd) = (Theme.Default300, Theme.Default300);
+			(fillStart, fillEnd) = (Theme.Default200, Theme.Default200);
+		}
 
 		var isClicked = false;
 
@@ -405,7 +422,7 @@ public static class ImDraw
 
 		Paint.Clear();
 
-		Paint.SetStrokeWidth( 1.0f );
+		Paint.SetStrokeWidth( new Vector4( 0, 0, 0, 0.25f ) );
 		Paint.SetStrokeLinearGradient( strokeStart, strokeEnd );
 		Paint.SetFillLinearGradient( fillStart, fillEnd );
 
@@ -443,11 +460,12 @@ public static class ImDraw
 	public static void Separator()
 	{
 		var bounds = new Rectangle( Cursor.Position, new Vector2( Screen.Size.X, 32 ) );
+		var color = Theme.IsDark ? Theme.Default50.WithAlpha( 0.25f ) : Theme.Default950.WithAlpha( 0.5f );
 
 		Cursor.BumpPosition( new Vector2( 0, 10.0f ) );
 
 		Paint.Clear();
-		Paint.SetFillSolid( Theme.Default50.WithAlpha( 0.25f ) );
+		Paint.SetFillSolid( color );
 		Paint.DrawRect( new Rectangle( Cursor.Position, new Vector2( Screen.Size.X - (Cursor.Padding.X * 2.0f), 1.0f ) ) );
 
 		Cursor.Advance( bounds );

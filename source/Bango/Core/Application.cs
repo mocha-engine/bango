@@ -32,7 +32,13 @@ public partial class Application
 		Graphics.PanelRenderer.NewFrame();
 
 		if ( DrawBackground )
-			Graphics.DrawRect( new Rectangle( new Vector2( 0, 50 + headerHeight ), Screen.Size ), Theme.Default800.WithAlpha( 0.15f ), Vector4.Zero );
+		{
+			var color = Theme.IsDark ? Theme.Default800.WithAlpha( 0.15f ) : Theme.Default500.WithAlpha( 0.5f );
+			Graphics.DrawRect( new Rectangle( new Vector2( 0, 50 + headerHeight ), Screen.Size ), color, Vector4.Zero );
+
+			var borderColor = Theme.IsDark ? Theme.Default50.WithAlpha( 0.25f ) : Theme.Default950.WithAlpha( 0.25f );
+			Graphics.DrawRect( new Rectangle( new Vector2( 0, 50 + headerHeight ), Screen.Size.WithY( 1.0f ) ), borderColor, Vector4.Zero );
+		}
 
 		ImDraw.NewFrame();
 		ImDraw.TitleBar();

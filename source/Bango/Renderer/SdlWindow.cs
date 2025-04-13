@@ -94,7 +94,6 @@ public class SdlWindow
 		WinApi.ExtendFrame( WindowHandle, -1, 0, 0, 0 );
 		Input.SetHitTest( SdlHandle );
 		SetMica( WindowHandle );
-		SetImmersiveDarkMode( WindowHandle, true );
 
 		Screen.UpdateFrom( Size );
 	}

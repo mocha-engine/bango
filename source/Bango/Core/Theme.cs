@@ -16,7 +16,17 @@ public static class Theme
 
 	public static Color Accent = "#f87462";
 
-	public static bool IsDark = false;
+	private static bool _isDark = false;
+
+	public static bool IsDark
+	{
+		get => _isDark;
+		set
+		{
+			SdlWindow.SetImmersiveDarkMode( SdlWindow.Current.WindowHandle, value );
+			_isDark = value;
+		}
+	}
 
 	public static float ControlHeight = 32.0f;
 	public static float ControlPadding = 16.0f;
