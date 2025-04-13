@@ -24,16 +24,13 @@ public class Shader : Asset
 		var directoryName = System.IO.Path.GetDirectoryName( Path );
 		var fileName = System.IO.Path.GetFileName( Path );
 		
-		watcher = FileSystem.Game.CreateWatcher( directoryName, fileName );
-		watcher.Changed += OnWatcherChanged;
+		watcher = FileSystem.Game.CreateWatcher( directoryName, fileName, () =>
+		{
+			IsDirty = true;
+		} );
 
 		this.TargetFramebuffer = targetFramebuffer;
 		this.FaceCullMode = faceCullMode;
-	}
-
-	private void OnWatcherChanged( object sender, FileSystemEventArgs e )
-	{
-		IsDirty = true;
 	}
 
 	public static bool IsFileReady( string path )

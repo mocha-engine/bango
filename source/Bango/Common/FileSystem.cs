@@ -5,6 +5,7 @@ public class FileSystem
 {
 	public static FileSystem Game => new FileSystem( "content\\" );
 
+	private List<FileSystemWatcher> _watchers = new();
 	private string BasePath { get; }
 
 	public FileSystem( string relativePath )
@@ -51,7 +52,7 @@ public class FileSystem
 		return File.Exists( GetAbsolutePath( relativePath, ignorePathNotFound: true ) );
 	}
 
-	public FileSystemWatcher CreateWatcher( string relativeDir, string filter )
+	public FileSystemWatcher CreateWatcher( string relativeDir, string filter, Action onChange )
 	{
 		var directoryName = GetAbsolutePath( relativeDir );
 		var watcher = new FileSystemWatcher( directoryName, filter );
@@ -66,6 +67,13 @@ public class FileSystem
 							 | NotifyFilters.Size;
 
 		watcher.EnableRaisingEvents = true;
+		watcher.IncludeSubdirectories = true;
+		watcher.Changed += ( _, e ) =>
+		{
+			onChange();
+		};
+
+		_watchers.Add( watcher );
 
 		return watcher;
 	}
@@ -94,5 +102,25 @@ public class FileSystem
 	{
 		var text = ReadAllText( filePath );
 		return JsonSerializer.Deserialize<T>( text );
+	}
+
+	public bool IsFileReady( string relativePath )
+	{
+		var path = GetAbsolutePath( relativePath );
+
+		if ( !Path.Exists( path ) )
+		{
+			throw new Exception( "File does not exist" );
+		}
+
+		try
+		{
+			using FileStream inputStream = File.Open( path, FileMode.Open, FileAccess.Read, FileShare.None );
+			return inputStream.Length > 0;
+		}
+		catch ( Exception )
+		{
+			return false;
+		}
 	}
 }
