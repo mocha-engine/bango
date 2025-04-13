@@ -5,6 +5,8 @@ public partial class Application
 
 	private float headerHeight = 0f;
 
+	public bool DrawBackground { get; set; } = true;
+
 	protected Application( string appTitle = "Bango Window", float headerHeight = 0 )
 	{		
 		var bootstrap = new Bootstrap( this );
@@ -28,7 +30,10 @@ public partial class Application
 	internal void Render( Veldrid.CommandList commandList )
 	{
 		Graphics.PanelRenderer.NewFrame();
-		Graphics.DrawRect( new Rectangle( new Vector2( 0, 30 + headerHeight ), Screen.Size ), Theme.Default950, Vector4.Zero );
+
+		if ( DrawBackground )
+			Graphics.DrawRect( new Rectangle( new Vector2( 0, 30 + headerHeight ), Screen.Size ), Theme.Default950, Vector4.Zero );
+
 		ImDraw.NewFrame();
 		ImDraw.TitleBar();
 
