@@ -111,9 +111,9 @@ public static partial class Input
 		{
 			return SDL_HitTestResult.ResizeRight;
 		}
-		else if ( point.y < 30 )
+		else if ( point.y < 50 )
 		{
-			if ( point.x < Screen.Size.X - 143 )
+			if ( point.x < Screen.Size.X - 135 )
 			{
 				return SDL_HitTestResult.Draggable;
 			}
