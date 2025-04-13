@@ -96,6 +96,8 @@ public class SdlWindow
 		SetMica( WindowHandle );
 
 		Screen.UpdateFrom( Size );
+
+		Theme.IsDark = ShouldSystemUseDarkMode();
 	}
 
 	public void Minimize()
@@ -169,4 +171,7 @@ public class SdlWindow
 		// A result of 0 indicates success.
 		return result == 0;
 	}
+
+	[DllImport( "UXTheme.dll", SetLastError = true, EntryPoint = "#138" )]
+	private static extern bool ShouldSystemUseDarkMode();
 }
